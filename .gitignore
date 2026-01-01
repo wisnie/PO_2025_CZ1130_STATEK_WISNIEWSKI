@@ -85,6 +85,9 @@ bin/
 ### Mac OS ###
 .DS_Store
 
+# Idea
+.idea/
+
 ### Windows ###
 Thumbs.db
 ehthumbs.db
