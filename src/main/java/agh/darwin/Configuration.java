@@ -13,10 +13,10 @@ public record Configuration(
 
     public record MapVariant(GridMap mapVariant) {}
 
-    public record PlantParameters(int plantsPerDay, int plantEnergy) {}
+    public record PlantParameters(int startingPlants, int plantsPerDay, int plantEnergy) {}
 
     public record AnimalParameters(int startingAnimals,
-                                   int energyUponBirth,
+                                   int startingEnergy,
                                    int dailyEnergyConsumption,
                                    int reproductionThreshold,
                                    int reproductionCost) {}

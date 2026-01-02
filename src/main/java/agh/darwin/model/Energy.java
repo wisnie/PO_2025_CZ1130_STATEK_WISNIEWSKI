@@ -1,7 +1,20 @@
 package agh.darwin.model;
 
-public record Energy(int energy) {
-    Energy consumeEnergy(int amountConsumed) {
-        return new Energy(Math.max(0, energy - amountConsumed));
+public record Energy(int amount) implements Comparable<Energy> {
+    Energy loseEnergy(Energy energyLost) {
+        return new Energy(Math.max(0, amount - energyLost.amount));
+    }
+
+    Energy gainEnergy(Energy energyGain) {
+        return new Energy(amount + energyGain.amount);
+    }
+
+    public boolean noEnergy() {
+        return amount == 0;
+    }
+
+    @Override
+    public int compareTo(Energy o) {
+        return Integer.compare(amount, o.amount);
     }
 }

@@ -13,10 +13,27 @@ public enum OrdinalDirection {
     private final String displayText;
     private final Vector2i unitVector;
 
+    private static final OrdinalDirection[] directions = values();
+
     OrdinalDirection(String displayText, Vector2i unitVector) {
         this.displayText = displayText;
         this.unitVector = unitVector;
     }
+
+    public OrdinalDirection rotate(Rotation rotation) {
+        int offset = switch (rotation) {
+            case ZERO -> 0;
+            case FORTY_FIVE -> 1;
+            case NINETY -> 2;
+            case ONE_HUNDRED_THIRTY_FIVE -> 3;
+            case ONE_HUNDRED_EIGHTY -> 4;
+            case TWO_HUNDRED_TWENTY_FIVE -> 5;
+            case TWO_HUNDRED_SEVENTY -> 6;
+            case THREE_HUNDRED_FIFTEEN -> 7;
+        };
+
+        return directions[(this.ordinal() + offset) % directions.length];
+    };
 
     public Vector2i toUnitVector() {
         return unitVector;
