@@ -5,6 +5,8 @@ import agh.darwin.supplementary.FinitePositionGenerator;
 import agh.darwin.supplementary.PlantPositionGenerator;
 import agh.darwin.supplementary.Vector2i;
 
+import java.util.HashMap;
+
 
 public class Simulation {
     private final GridMap simulationMap;
@@ -36,7 +38,7 @@ public class Simulation {
         }
 
         PlantPositionGenerator plantPositionGenerator = new PlantPositionGenerator(configuration.mapDimensions().width(),
-                configuration.mapDimensions().height(), configuration.plantParams().plantsPerDay());
+                configuration.mapDimensions().height(), configuration.plantParams().startingPlants(), new HashMap<>());
 
         for (Vector2i plantPosition : plantPositionGenerator) {
             Plant plant = new Plant(plantPosition, new Energy(configuration.plantParams().plantEnergy()));

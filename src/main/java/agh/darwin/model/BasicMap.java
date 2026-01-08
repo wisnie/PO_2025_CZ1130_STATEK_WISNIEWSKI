@@ -78,7 +78,7 @@ public class BasicMap implements GridMap {
 
         // TODO pareto
         PlantPositionGenerator plantPositionGenerator = new PlantPositionGenerator(configuration.mapDimensions().width(),
-                configuration.mapDimensions().height(), configuration.plantParams().plantsPerDay());
+                configuration.mapDimensions().height(), configuration.plantParams().plantsPerDay(), plants);
 
         for (Vector2i plantPosition : plantPositionGenerator) {
             if (!plants.containsKey(plantPosition)) {
@@ -140,4 +140,5 @@ public class BasicMap implements GridMap {
 
         animals.get(field).add(newborn);
     }
+
 }
