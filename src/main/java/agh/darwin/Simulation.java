@@ -4,10 +4,13 @@ import agh.darwin.model.*;
 import agh.darwin.supplementary.FinitePositionGenerator;
 import agh.darwin.supplementary.Vector2i;
 
+import java.util.HashMap;
+
 
 public class Simulation {
     private final GridMap simulationMap;
     private final Configuration configuration;
+    private final HashMap<Animal, AnimalStatistic> animalStatistics = new HashMap<>();
 
     public Simulation(Configuration configuration) {
         this.configuration = configuration;

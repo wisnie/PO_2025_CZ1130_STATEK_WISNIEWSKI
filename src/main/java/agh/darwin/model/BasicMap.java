@@ -8,9 +8,13 @@ import agh.darwin.supplementary.Vector2i;
 import java.util.*;
 
 public class BasicMap implements GridMap {
-    private final HashMap<Vector2i, List<Animal>> animals = new HashMap<>();
+    protected final HashMap<Vector2i, List<Animal>> animals = new HashMap<>();
     private final HashMap<Vector2i, Plant> plants = new HashMap<>();
     private final ArrayList<MapEventListener> observers = new ArrayList<>();
+    private final Comparator<Animal> strengthSorter = Comparator
+            .comparing(Animal::getEnergy)
+            .thenComparing(animal -> 0.0);
+
 
     private final Configuration configuration;
     private final SphereTopology topology;
@@ -34,80 +38,31 @@ public class BasicMap implements GridMap {
 
     @Override
     public void simulateDayProgression() {
-        // TODO Refactoring
-        for (List<Animal> animalsOnField : List.copyOf(animals.values())) {
-            for (Animal animal : List.copyOf(animalsOnField)) {
-                if (animalIsDead(animal)) {
-                    removeAnimal(animal.getPosition(), animal);
-                    continue;
-                }
+        removeDeadAnimals();
+        moveAnimals();
+        feedAnimals();
+        reproduceAnimals();
+        growPlants();
+    }
 
-                moveAnimal(animal);
-                animal.exhaust();
-            }
-        }
-
-        for (Map.Entry<Vector2i, List<Animal>> fieldAnimals : animals.entrySet()) {
-            Vector2i field = fieldAnimals.getKey();
-            List<Animal> animalsOnField = fieldAnimals.getValue();
-
-            Comparator<Animal> strengthSorter = Comparator
-                    .comparing(Animal::getEnergy)
-                    .thenComparing(animal -> 0.0);
-
-            animalsOnField.sort(strengthSorter);
-            if (plants.containsKey(field)) {
-               Animal winner = animalsOnField.getFirst();
-               Plant plant = plants.get(field);
-               winner.consumePlant(plant.plantEnergy());
-               plants.remove(field);
-            }
-
-            List<Animal> animalPair = animalsOnField.stream()
-                    .filter((animal) ->
-                            animal.getEnergy().amount() > configuration.animalParams().reproductionThreshold())
-                    .limit(2)
-                    .toList();
-
-            if (animalPair.size() == 2) {
-                breedAnimals(animalPair);
-            }
-        }
-
-
-        // TODO pareto
-        FinitePositionGenerator plantPositionGenerator = new FinitePositionGenerator(configuration.mapDimensions().width(),
-                configuration.mapDimensions().height(), configuration.plantParams().plantsPerDay());
-
-        for (Vector2i plantPosition : plantPositionGenerator) {
-            if (!plants.containsKey(plantPosition)) {
-                Plant plant = new Plant(plantPosition,
-                        new Energy(configuration.plantParams().plantEnergy()));
-
-                place(plant);
-            }
-        }
+    private void removeDeadAnimals() {
+        animals.values().forEach( a -> a.removeIf(this::animalIsDead));
+        animals.values().removeIf(List::isEmpty);
     }
 
     private boolean animalIsDead(Animal animal) {
         return animal.getEnergy().noEnergy();
     }
 
-    private void removeAnimal(Vector2i field, Animal animal) {
-        List<Animal> animalsOnField = animals.get(field);
-        animalsOnField.remove(animal);
+    protected void moveAnimals() {
+        List<Animal> allAnimals = animals.values()
+                .stream()
+                .flatMap(Collection::stream)
+                .toList();
 
-        if (animalsOnField.isEmpty()) animals.remove(field);
-    }
-
-    private void addAnimal(Animal animal) {
-        Vector2i field = animal.getPosition();
-        if (animals.containsKey(field)) {
-            animals.get(field).add(animal);
-        } else {
-            ArrayList<Animal> animalsOnField = new ArrayList<>();
-            animalsOnField.add(animal);
-            animals.put(field, animalsOnField);
+        for (Animal animal : allAnimals) {
+            moveAnimal(animal);
+            animal.exhaust();
         }
     }
 
@@ -119,7 +74,51 @@ public class BasicMap implements GridMap {
         addAnimal(animal);
     }
 
-    private void breedAnimals(List<Animal> animalsPair) {
+    private void removeAnimal(Vector2i field, Animal animal) {
+        List<Animal> animalsOnField = animals.get(field);
+        animalsOnField.remove(animal);
+
+        if (animalsOnField.isEmpty()) animals.remove(field);
+    }
+
+    private void addAnimal(Animal animal) {
+        Vector2i field = animal.getPosition();
+        animals.computeIfAbsent(field, k -> new ArrayList<>()).add(animal);
+    }
+
+    private void feedAnimals() {
+        for (Map.Entry<Vector2i, List<Animal>> fieldAnimals : animals.entrySet()) {
+            Vector2i field = fieldAnimals.getKey();
+            List<Animal> animalsOnField = fieldAnimals.getValue();
+
+            if (plants.containsKey(field)) {
+                animalsOnField.sort(strengthSorter);
+
+                Animal winner = animalsOnField.getFirst();
+                Plant plant = plants.get(field);
+
+                winner.consumePlant(plant.plantEnergy());
+                plants.remove(field);
+            }
+        }
+    }
+
+    private void reproduceAnimals() {
+        for (List<Animal> animalsOnField : animals.values()) {
+            animalsOnField.sort(strengthSorter);
+            List<Animal> animalPair = animalsOnField.stream()
+                    .filter((animal) ->
+                            animal.getEnergy().amount() > configuration.animalParams().reproductionThreshold())
+                    .limit(2)
+                    .toList();
+
+            if (animalPair.size() == 2) {
+                reproducePair(animalPair);
+            }
+        }
+    }
+
+    private void reproducePair(List<Animal> animalsPair) {
         if (animalsPair.size() != 2)
             throw new IllegalArgumentException("vetylf saldkjf alsdjf lajsdlf jasdlkf jasldjf ");
 
@@ -138,5 +137,20 @@ public class BasicMap implements GridMap {
         );
 
         animals.get(field).add(newborn);
+    }
+
+    private void growPlants() {
+        // TODO pareto
+        FinitePositionGenerator plantPositionGenerator = new FinitePositionGenerator(configuration.mapDimensions().width(),
+                configuration.mapDimensions().height(), configuration.plantParams().plantsPerDay());
+
+        for (Vector2i plantPosition : plantPositionGenerator) {
+            if (!plants.containsKey(plantPosition)) {
+                Plant plant = new Plant(plantPosition,
+                        new Energy(configuration.plantParams().plantEnergy()));
+
+                place(plant);
+            }
+        }
     }
 }
