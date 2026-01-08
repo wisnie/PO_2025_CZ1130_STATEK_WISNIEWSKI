@@ -1,45 +1,95 @@
 package agh.darwin.supplementary;
 
 
+
 import java.util.Iterator;
 import java.util.Random;
 
 
 public class PlantPositionGenerator implements Iterable<Vector2i> {
     private static final double JUNGLE_MAP_COVERAGE = 0.2;
+    private static final double PLANT_IN_JUNGLE_POSSIBILITY = 0.8;
     private final int mapWidth;
     private final int mapHeight;
     private final int totalPositions;
+    private final int jungleHeight;
+    private final int jungleMinY;
+    private final int junglePositionsNumber;
+    private final int dailyPlantNumber;
 
 
-    public PlantPositionGenerator(int mapWidth, int mapHeight) {
-        this.mapHeight = mapHeight;
+    private final Random random = new Random();
+
+    public PlantPositionGenerator(int mapWidth, int mapHeight, int dailyPlantNumber) {
         this.mapWidth = mapWidth;
+        this.mapHeight = mapHeight;
         this.totalPositions = mapWidth * mapHeight;
+        this.dailyPlantNumber = dailyPlantNumber;
+        this.jungleHeight = (int) (mapHeight * JUNGLE_MAP_COVERAGE);
+        this.jungleMinY = (mapHeight - jungleHeight) / 2;
+        this.junglePositionsNumber = mapWidth * jungleHeight;
+
     }
 
     @Override
-    public Iterator<Vector2i> iterator(){
-        return new Iterator<>(){
-            private int jungleCount = 0;
-            private int northHemisphereCount = 0;
-            private int southHemisphereCount = 0;
+    public Iterator<Vector2i> iterator() {
+        return new Iterator<>() {
+            private int jungleIndex = 0;
+            private int steppeIndex = 0;
 
-            private final Random random = new Random();
+            private final int[] junglePositions = new int[junglePositionsNumber];
 
+            {
+                for (int i = 0; i < junglePositionsNumber; i++) {
+                    junglePositions[i] = i;
+                }
+            }
 
+            private final int[] steppePositions = new int[totalPositions-junglePositionsNumber];
+
+            {
+                for (int i = 0; i < totalPositions-junglePositionsNumber; i++) {
+                    steppePositions[i] = i;
+                }
+            }
             @Override
             public boolean hasNext() {
-                return (jungleCount + northHemisphereCount + southHemisphereCount) < totalPositions;
+                return jungleIndex + steppeIndex < dailyPlantNumber;
             }
-
             @Override
             public Vector2i next() {
-                int drawn = random.nextInt(9);
+                double jungleOrSteppe= random.nextDouble();
+                if (jungleOrSteppe <= PLANT_IN_JUNGLE_POSSIBILITY) {
+                    int randomIndex = jungleIndex + random.nextInt(junglePositionsNumber - jungleIndex);
+                    int temporary = junglePositions[jungleIndex];
+                    int drawn = junglePositions[randomIndex];
+                    junglePositions[randomIndex] = temporary;
+                    junglePositions[jungleIndex] = drawn;
+                    final int X = (drawn % mapWidth);
+                    final int Y = jungleMinY + (drawn / mapWidth);
+                    jungleIndex++;
+                    return new Vector2i(X, Y);
+                }
+                else {
+                    int randomIndex = steppeIndex + random.nextInt(totalPositions-junglePositionsNumber-steppeIndex);
+                    int temporary = steppePositions[steppeIndex];
+                    int drawn = steppePositions[randomIndex];
+                    steppePositions[randomIndex] = temporary;
+                    steppePositions[steppeIndex] = drawn;
 
+                    final int X = (drawn % mapWidth);
+                    int Y  = (drawn / mapWidth);
+                    if (Y >= jungleMinY) {
+                        Y += jungleHeight;
+                    }
+                    steppeIndex++;
+                    return new Vector2i(X,Y);
 
-                return null;
+                }
+
             }
+
+
         };
     }
 }

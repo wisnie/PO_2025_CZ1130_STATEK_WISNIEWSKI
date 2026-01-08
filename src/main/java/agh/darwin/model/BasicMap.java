@@ -3,6 +3,7 @@ package agh.darwin.model;
 import agh.darwin.Configuration;
 import agh.darwin.supplementary.FinitePositionGenerator;
 import agh.darwin.supplementary.MapEventListener;
+import agh.darwin.supplementary.PlantPositionGenerator;
 import agh.darwin.supplementary.Vector2i;
 
 import java.util.*;
@@ -76,7 +77,7 @@ public class BasicMap implements GridMap {
 
 
         // TODO pareto
-        FinitePositionGenerator plantPositionGenerator = new FinitePositionGenerator(configuration.mapDimensions().width(),
+        PlantPositionGenerator plantPositionGenerator = new PlantPositionGenerator(configuration.mapDimensions().width(),
                 configuration.mapDimensions().height(), configuration.plantParams().plantsPerDay());
 
         for (Vector2i plantPosition : plantPositionGenerator) {

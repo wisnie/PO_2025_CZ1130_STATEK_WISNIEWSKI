@@ -2,6 +2,7 @@ package agh.darwin;
 
 import agh.darwin.model.*;
 import agh.darwin.supplementary.FinitePositionGenerator;
+import agh.darwin.supplementary.PlantPositionGenerator;
 import agh.darwin.supplementary.Vector2i;
 
 
@@ -34,7 +35,7 @@ public class Simulation {
             simulationMap.place(animal);
         }
 
-        FinitePositionGenerator plantPositionGenerator = new FinitePositionGenerator(configuration.mapDimensions().width(),
+        PlantPositionGenerator plantPositionGenerator = new PlantPositionGenerator(configuration.mapDimensions().width(),
                 configuration.mapDimensions().height(), configuration.plantParams().plantsPerDay());
 
         for (Vector2i plantPosition : plantPositionGenerator) {
