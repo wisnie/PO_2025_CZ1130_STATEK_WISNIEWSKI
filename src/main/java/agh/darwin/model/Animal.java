@@ -58,6 +58,10 @@ public class Animal implements MapEntity {
         return energy;
     }
 
+    public Genotype getGenotype() {
+        return genotype;
+    }
+
     public Vector2i getPosition() {
         return position;
     }
