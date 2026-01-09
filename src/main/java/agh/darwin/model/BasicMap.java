@@ -54,7 +54,8 @@ public class BasicMap implements GridMap {
 
             Comparator<Animal> strengthSorter = Comparator
                     .comparing(Animal::getEnergy)
-                    .thenComparing(animal -> 0.0);
+                    .thenComparing(animal -> 0.0) //trzeba porównać inne parametry wiek, dzieci
+                    .reversed();
 
             animalsOnField.sort(strengthSorter);
             if (plants.containsKey(field)) {
@@ -134,7 +135,7 @@ public class BasicMap implements GridMap {
         // TODO, genotype
         Animal newborn = new Animal(field,
                 new Energy(2 * configuration.animalParams().reproductionCost()),
-                Genotype.randomGenotype(configuration.genotypeParams().genomeLength()),
+                Genotype.childGenotype(weaker, stronger),
                 configuration.animalParams()
         );
 
