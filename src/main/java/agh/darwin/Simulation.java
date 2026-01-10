@@ -6,16 +6,21 @@ import agh.darwin.supplementary.PlantPositionGenerator;
 import agh.darwin.supplementary.Vector2i;
 
 import java.util.HashMap;
+import java.util.function.Supplier;
 
 
-public class Simulation {
+public class Simulation implements AnimalEventListener, MapEventListener {
+    private final HashMap<Animal, AnimalStatistic> statistics = new HashMap<>();
+
     private final GridMap simulationMap;
     private final Configuration configuration;
+
+    int simulationDay = 0;
 
     public Simulation(Configuration configuration) {
         this.configuration = configuration;
         this.simulationMap = new BasicMap(configuration.mapDimensions().width(),
-                configuration.mapDimensions().height(), configuration);
+                configuration.mapDimensions().height(), this::provideStatistics, configuration);
 
         addStartingEntities();
     }
@@ -44,5 +49,33 @@ public class Simulation {
             Plant plant = new Plant(plantPosition, new Energy(configuration.plantParams().plantEnergy()));
             simulationMap.place(plant);
         }
+    }
+
+    public AnimalAccessStatistics provideStatistics(Animal animal) {
+        AnimalStatistic animalStatistic = statistics.get(animal);
+        return new AnimalAccessStatistics() {
+            @Override
+            public int getAge() {
+                return animalStatistic.getAge(simulationDay);
+            }
+
+            @Override
+            public int getOffspringCount() {
+                return animalStatistic.getOffspringCount();
+            }
+        };
+    }
+
+    @Override
+    public void animalChanged(Animal animal, AnimalEvent event) {
+        AnimalStatistic animalStats = statistics
+                .computeIfAbsent(animal, k -> new AnimalStatistic(simulationDay));
+
+        animalStats.handleEvent(event, simulationDay);
+    }
+
+    @Override
+    public void mapChanged(GridMap gridMap, String message) {
+
     }
 }
