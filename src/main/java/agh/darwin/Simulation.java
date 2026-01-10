@@ -8,7 +8,7 @@ import agh.darwin.supplementary.Vector2i;
 import java.util.HashMap;
 
 
-public class Simulation {
+public class Simulation implements Runnable {
     private final GridMap simulationMap;
     private final Configuration configuration;
 
@@ -20,9 +20,15 @@ public class Simulation {
         addStartingEntities();
     }
 
-    void run() {
+    @Override
+    public void run() {
         for (int i = 0; i < 100; i++) {
             simulationMap.simulateDayProgression();
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                IO.println("Simulation thread interrupted");
+            }
         }
     }
 
@@ -44,5 +50,9 @@ public class Simulation {
             Plant plant = new Plant(plantPosition, new Energy(configuration.plantParams().plantEnergy()));
             simulationMap.place(plant);
         }
+    }
+
+    public GridMap getMap() {
+        return simulationMap;
     }
 }
