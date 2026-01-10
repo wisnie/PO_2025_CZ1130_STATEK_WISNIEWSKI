@@ -1,7 +1,6 @@
 package agh.darwin.model;
 
 import agh.darwin.Configuration;
-import agh.darwin.supplementary.FinitePositionGenerator;
 import agh.darwin.supplementary.MapEventListener;
 import agh.darwin.supplementary.PlantPositionGenerator;
 import agh.darwin.supplementary.Vector2i;
@@ -127,7 +126,6 @@ public class BasicMap implements GridMap {
         stronger.reproduce();
         weaker.reproduce();
 
-        // TODO, genotype
         Animal newborn = new Animal(field,
                 new Energy(2 * configuration.animalParams().reproductionCost()),
                 Genotype.childGenotype(weaker, stronger),
