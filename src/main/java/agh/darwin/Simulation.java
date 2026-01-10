@@ -14,7 +14,7 @@ public class Simulation {
 
     public Simulation(Configuration configuration) {
         this.configuration = configuration;
-        this.simulationMap = new BasicMap(configuration.mapDimensions().width(),
+        this.simulationMap = new ScentMap(configuration.mapDimensions().width(),
                 configuration.mapDimensions().height(), configuration);
 
         addStartingEntities();

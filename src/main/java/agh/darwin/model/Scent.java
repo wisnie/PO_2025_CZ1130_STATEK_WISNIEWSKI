@@ -3,10 +3,31 @@ package agh.darwin.model;
 import agh.darwin.supplementary.Vector2i;
 
 public class Scent {
-    private final Vector2i source;
-    private int daysToDisappear;
+    private final Vector2i origin;
+    private int scentLongevityInDays;
 
-    public Scent(Vector2i source) {
-        this.source = source;
+    public Scent(Vector2i origin, int scentLongevityInDays) {
+        this.origin = origin;
+        this.scentLongevityInDays = scentLongevityInDays;
+    }
+
+    public Vector2i getOrigin() {
+        return origin;
+    }
+
+    public int getScentLongevity() {
+        return scentLongevityInDays;
+    }
+
+    public void decreaseLongevity() {
+        scentLongevityInDays--;
+    }
+
+    public void increaseLongevity(int amount) {
+        scentLongevityInDays += amount;
+    }
+
+    public boolean scentGone() {
+        return scentLongevityInDays == 0;
     }
 }

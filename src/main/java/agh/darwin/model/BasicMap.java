@@ -11,16 +11,17 @@ public class BasicMap implements GridMap {
     protected final HashMap<Vector2i, List<Animal>> animals = new HashMap<>();
     private final HashMap<Vector2i, Plant> plants = new HashMap<>();
     private final ArrayList<MapEventListener> observers = new ArrayList<>();
-    private final Comparator<Animal> strengthSorter = Comparator
+    private final Comparator<Animal> animalComparator = Comparator
             .comparing(Animal::getEnergy)
             .thenComparing(animal -> 0.0);
 
 
-    private final Configuration configuration;
+    protected final Configuration configuration;
+    protected final Boundary boundary;
     private final SphereTopology topology;
 
     public BasicMap(int width, int height, Configuration configuration) {
-        Boundary boundary = new Boundary(new Vector2i(0, 0), new Vector2i(width - 1, height - 1));
+        boundary = new Boundary(new Vector2i(0, 0), new Vector2i(width - 1, height - 1));
         this.topology = new SphereTopology(boundary);
         this.configuration = configuration;
 
@@ -54,19 +55,17 @@ public class BasicMap implements GridMap {
         return animal.getEnergy().noEnergy();
     }
 
-    protected void moveAnimals() {
-        List<Animal> allAnimals = animals.values()
+    private void moveAnimals() {
+        for (Animal animal : animals.values()
                 .stream()
                 .flatMap(Collection::stream)
-                .toList();
-
-        for (Animal animal : allAnimals) {
+                .toList()) {
             moveAnimal(animal);
             animal.exhaust();
         }
     }
 
-    private void moveAnimal(Animal animal) {
+    void moveAnimal(Animal animal) {
         Vector2i initialField = animal.getPosition();
         animal.move(topology);
 
@@ -74,14 +73,14 @@ public class BasicMap implements GridMap {
         addAnimal(animal);
     }
 
-    private void removeAnimal(Vector2i field, Animal animal) {
+    protected void removeAnimal(Vector2i field, Animal animal) {
         List<Animal> animalsOnField = animals.get(field);
         animalsOnField.remove(animal);
 
         if (animalsOnField.isEmpty()) animals.remove(field);
     }
 
-    private void addAnimal(Animal animal) {
+    protected void addAnimal(Animal animal) {
         Vector2i field = animal.getPosition();
         animals.computeIfAbsent(field, k -> new ArrayList<>()).add(animal);
     }
@@ -92,9 +91,7 @@ public class BasicMap implements GridMap {
             List<Animal> animalsOnField = fieldAnimals.getValue();
 
             if (plants.containsKey(field)) {
-                animalsOnField.sort(strengthSorter);
-
-                Animal winner = animalsOnField.getFirst();
+                Animal winner = Collections.min(animalsOnField, animalComparator);
                 Plant plant = plants.get(field);
 
                 winner.consumePlant(plant.plantEnergy());
@@ -105,10 +102,10 @@ public class BasicMap implements GridMap {
 
     private void reproduceAnimals() {
         for (List<Animal> animalsOnField : animals.values()) {
-            animalsOnField.sort(strengthSorter);
             List<Animal> animalPair = animalsOnField.stream()
                     .filter((animal) ->
                             animal.getEnergy().amount() > configuration.animalParams().reproductionThreshold())
+                    .sorted(animalComparator)
                     .limit(2)
                     .toList();
 
@@ -118,12 +115,12 @@ public class BasicMap implements GridMap {
         }
     }
 
-    private void reproducePair(List<Animal> animalsPair) {
-        if (animalsPair.size() != 2)
-            throw new IllegalArgumentException("vetylf saldkjf alsdjf lajsdlf jasdlkf jasldjf ");
+    protected void reproducePair(List<Animal> animalPair) {
+        if (animalPair.size() != 2)
+            throw new IllegalArgumentException("Functions must be called with List<Animal> of size 2.");
 
-        Animal stronger = animalsPair.getFirst();
-        Animal weaker = animalsPair.getLast();
+        Animal stronger = animalPair.getFirst();
+        Animal weaker = animalPair.getLast();
         Vector2i field = stronger.getPosition();
 
         stronger.reproduce();
