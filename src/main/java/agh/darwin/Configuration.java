@@ -7,7 +7,8 @@ public record Configuration(
     MapVariant mapVariant,
     PlantParameters plantParams,
     AnimalParameters animalParams,
-    GenotypeParameters genotypeParams
+    GenotypeParameters genotypeParams,
+    ScentParameters scentParams
 ) {
     public record MapDimensions(int width, int height) {}
 
@@ -24,4 +25,6 @@ public record Configuration(
     public record GenotypeParameters(int minimumMutations,
                                      int maximumMutations,
                                      int genomeLength) {}
+
+    public record ScentParameters(int scentDays, double probabilityOfSmelling, int radius) {}
 }

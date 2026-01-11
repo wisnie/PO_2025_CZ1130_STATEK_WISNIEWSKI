@@ -13,14 +13,14 @@ public record SphereTopology(Boundary boundary) {
         Vector2i targetX = switch (direction) {
             case NORTH, SOUTH -> position.justX();
             case NORTHEAST, EAST, SOUTHEAST -> {
-                if (position.justX().equals(boundary.lowerBound().justX())) {
+                if (position.justX().equals(boundary.higherBound().justX())) {
                     yield boundary.higherBound().justX();
                 }
                 yield position.justX().add(moveVector.justX());
             }
 
             case SOUTHWEST, WEST, NORTHWEST -> {
-                if (position.justX().equals(boundary.higherBound().justX())) {
+                if (position.justX().equals(boundary.lowerBound().justX())) {
                     yield boundary.lowerBound().justX();
                 }
                 yield position.justX().add(moveVector.justX());
@@ -30,9 +30,9 @@ public record SphereTopology(Boundary boundary) {
         Vector2i targetY = switch (direction) {
             case EAST, WEST -> position.justY();
             case NORTHWEST, NORTH, NORTHEAST -> {
-                if (position.justY().equals(boundary.higherBound().justY())) {
+                if (position.justY().equals(boundary.upperBound().justY())) {
                     targetDirection = targetDirection.rotate(Rotation.ONE_HUNDRED_EIGHTY);
-                    yield boundary.higherBound().justY();
+                    yield boundary.upperBound().justY();
                 }
                 yield position.justY().add(moveVector.justY());
             }

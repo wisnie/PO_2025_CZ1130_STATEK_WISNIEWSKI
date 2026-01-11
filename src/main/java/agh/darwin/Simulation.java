@@ -9,11 +9,12 @@ import java.util.HashMap;
 import java.util.function.Supplier;
 
 
-public class Simulation implements AnimalEventListener, MapEventListener {
+public class Simulation implements AnimalEventListener, MapEventListener, Runnable {
     private final HashMap<Animal, AnimalStatistic> statistics = new HashMap<>();
 
     private final GridMap simulationMap;
     private final Configuration configuration;
+    private final HashMap<Animal, AnimalStatistic> animalStatistics = new HashMap<>();
 
     int simulationDay = 0;
 
@@ -25,9 +26,15 @@ public class Simulation implements AnimalEventListener, MapEventListener {
         addStartingEntities();
     }
 
-    void run() {
+    @Override
+    public void run() {
         for (int i = 0; i < 100; i++) {
             simulationMap.simulateDayProgression();
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                IO.println("Simulation thread interrupted");
+            }
         }
     }
 
@@ -77,5 +84,7 @@ public class Simulation implements AnimalEventListener, MapEventListener {
     @Override
     public void mapChanged(GridMap gridMap, String message) {
 
+    public GridMap getMap() {
+        return simulationMap;
     }
 }
