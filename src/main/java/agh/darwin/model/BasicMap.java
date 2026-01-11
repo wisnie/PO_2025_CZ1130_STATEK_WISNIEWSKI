@@ -5,21 +5,20 @@ import agh.darwin.supplementary.PlantPositionGenerator;
 import agh.darwin.supplementary.Vector2i;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class BasicMap implements GridMap {
     protected final HashMap<Vector2i, List<Animal>> animals = new HashMap<>();
     private final HashMap<Vector2i, Plant> plants = new HashMap<>();
-    private final ArrayList<MapEventListener> observers = new ArrayList<>();
-    private final Comparator<Animal> animalComparator = Comparator
-            .comparing(Animal::getEnergy)
-            .thenComparing(animal -> 0.0);
+    private final Comparator<Animal> animalComparator;
 
 
     protected final Configuration configuration;
     protected final Boundary boundary;
     private final SphereTopology topology;
+    private final ArrayList<MapEventListener> observers = new ArrayList<>();
+    private final ArrayList<AnimalEventListener> animalObservers = new ArrayList<>();
+
     private final Function<Animal, AnimalAccessStatistics> accessStats;
 
     public BasicMap(int width, int height, Function<Animal, AnimalAccessStatistics> accessStats, Configuration configuration) {
@@ -28,6 +27,11 @@ public class BasicMap implements GridMap {
         this.accessStats = accessStats;
         this.configuration = configuration;
 
+        this.animalComparator = Comparator
+                .comparing(Animal::getEnergy)
+                .thenComparing(a -> accessStats.apply(a).getAge())
+                .thenComparing(a -> accessStats.apply(a).getOffspringCount())
+                .reversed();
     }
 
     @Override
@@ -46,6 +50,11 @@ public class BasicMap implements GridMap {
     }
 
     @Override
+    public void subscribeAnimal(AnimalEventListener animalObserver) {
+        animalObservers.add(animalObserver);
+    }
+
+    @Override
     public void unsubscribe(MapEventListener observer) {
         observers.remove(observer);
     }
@@ -57,6 +66,8 @@ public class BasicMap implements GridMap {
         feedAnimals();
         reproduceAnimals();
         growPlants();
+
+        mapChanged("Mapa się zmieniła.");
     }
 
     private void removeDeadAnimals() {
@@ -76,8 +87,6 @@ public class BasicMap implements GridMap {
             moveAnimal(animal);
             animal.exhaust();
         }
-
-        mapChanged("Tu będą statystyki");
     }
 
     void moveAnimal(Animal animal) {
@@ -98,6 +107,7 @@ public class BasicMap implements GridMap {
     protected void addAnimal(Animal animal) {
         Vector2i field = animal.getPosition();
         animals.computeIfAbsent(field, k -> new ArrayList<>()).add(animal);
+        animalChanged(animal, AnimalEvent.REPLACEMENT);
     }
 
     private void feedAnimals() {
@@ -105,13 +115,6 @@ public class BasicMap implements GridMap {
             Vector2i field = fieldAnimals.getKey();
             List<Animal> animalsOnField = fieldAnimals.getValue();
 
-            Comparator<Animal> strengthSorter = Comparator
-                    .comparing(Animal::getEnergy)
-                    .thenComparing(a -> accessStats.apply(a).getAge())
-                    .thenComparing(a -> accessStats.apply(a).getOffspringCount())
-                    .reversed();
-
-            animalsOnField.sort(strengthSorter);
             if (plants.containsKey(field)) {
                 Animal winner = Collections.min(animalsOnField, animalComparator);
                 Plant plant = plants.get(field);
@@ -173,6 +176,12 @@ public class BasicMap implements GridMap {
     public void mapChanged(String message){
         for (MapEventListener observer : observers){
             observer.mapChanged(this,message);
+        }
+    }
+
+    public void animalChanged(Animal animal, AnimalEvent event) {
+        for (AnimalEventListener observer: animalObservers) {
+            observer.animalChanged(animal, event);
         }
     }
 

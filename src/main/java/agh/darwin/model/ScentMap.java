@@ -10,11 +10,10 @@ public class ScentMap extends BasicMap {
     private final HashMap<Vector2i, List<Scent>> scents = new HashMap<>();
     private final LinkedList<Scent> activeScents = new LinkedList<>();
 
-    private final SplittableRandom random;
+    private final SplittableRandom random = new SplittableRandom();;
 
     public ScentMap(int width, int height, Function<Animal, AnimalAccessStatistics> accessStats, Configuration configuration) {
         super(width, height, accessStats, configuration);
-        this.random = new SplittableRandom();
     }
 
     @Override

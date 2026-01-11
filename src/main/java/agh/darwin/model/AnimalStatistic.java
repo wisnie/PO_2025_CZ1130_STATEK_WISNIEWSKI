@@ -20,6 +20,7 @@ public class AnimalStatistic {
 
     public void handleEvent(AnimalEvent animalEvent, int day) {
         switch (animalEvent) {
+            case REPLACEMENT -> {}
             case PLANT_CONSUMPTION -> plantsEaten++;
             case REPRODUCTION -> offspringCount++;
             case DEATH -> deathDay = day;

@@ -22,6 +22,8 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
         this.simulationMap = new ScentMap(configuration.mapDimensions().width(),
                 configuration.mapDimensions().height(), this::provideStatistics, configuration);
 
+        this.simulationMap.subscribeAnimal(this);
+
         addStartingEntities();
     }
 
@@ -30,7 +32,7 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
         for (int i = 0; i <= 100; i++) {
             simulationMap.simulateDayProgression();
             try {
-                Thread.sleep(1000);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 IO.println("Simulation thread interrupted");
             }
@@ -82,7 +84,6 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
 
     @Override
     public GridMap mapChanged(GridMap gridMap, String message) {
-
         return gridMap;
     }
 

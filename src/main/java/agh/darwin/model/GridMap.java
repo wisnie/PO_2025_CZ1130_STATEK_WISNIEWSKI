@@ -7,6 +7,8 @@ public interface GridMap {
 
     public void subscribe(MapEventListener observer);
 
+    public void subscribeAnimal(AnimalEventListener observer);
+
     public void unsubscribe(MapEventListener observer);
 
     void simulateDayProgression();

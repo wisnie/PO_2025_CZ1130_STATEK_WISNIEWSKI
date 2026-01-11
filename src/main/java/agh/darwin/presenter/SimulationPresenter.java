@@ -46,6 +46,7 @@ public class SimulationPresenter implements MapEventListener {
             drawMap();
             statsLabel.setText(message);
         });
+
         return gridMap;
     }
 
