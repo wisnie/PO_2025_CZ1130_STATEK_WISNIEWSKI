@@ -6,7 +6,6 @@ import agh.darwin.supplementary.PlantPositionGenerator;
 import agh.darwin.supplementary.Vector2i;
 
 import java.util.HashMap;
-import java.util.function.Supplier;
 
 
 public class Simulation implements AnimalEventListener, MapEventListener, Runnable {
@@ -20,7 +19,7 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
 
     public Simulation(Configuration configuration) {
         this.configuration = configuration;
-        this.simulationMap = new BasicMap(configuration.mapDimensions().width(),
+        this.simulationMap = new ScentMap(configuration.mapDimensions().width(),
                 configuration.mapDimensions().height(), this::provideStatistics, configuration);
 
         addStartingEntities();
@@ -28,10 +27,10 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
 
     @Override
     public void run() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i <= 100; i++) {
             simulationMap.simulateDayProgression();
             try {
-                Thread.sleep(300);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 IO.println("Simulation thread interrupted");
             }
@@ -82,7 +81,10 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
     }
 
     @Override
-    public void mapChanged(GridMap gridMap, String message) {
+    public GridMap mapChanged(GridMap gridMap, String message) {
+
+        return gridMap;
+    }
 
     public GridMap getMap() {
         return simulationMap;

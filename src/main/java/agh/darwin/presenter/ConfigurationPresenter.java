@@ -3,7 +3,7 @@ package agh.darwin.presenter;
 import agh.darwin.Configuration;
 import agh.darwin.Simulation;
 import agh.darwin.SimulationEngine;
-import agh.darwin.model.BasicMap;
+import agh.darwin.model.ScentMap; // ZMIANA
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -28,25 +28,28 @@ public class ConfigurationPresenter {
     @FXML private TextField minimumMutationsField;
     @FXML private TextField maximumMutationsField;
     @FXML private TextField genomeLengthField;
+    @FXML private TextField scentDaysField;
+    @FXML private TextField probabilityOfSmellingField;
+    @FXML private TextField scentRadiusField;
 
     @FXML
     private void onSimulationStartClicked() throws IOException {
         int width = Integer.parseInt(widthField.getText());
         int height = Integer.parseInt(heightField.getText());
-
         int startingPlants = Integer.parseInt(startingPlantsField.getText());
         int plantsPerDay = Integer.parseInt(plantsPerDayField.getText());
         int plantEnergy = Integer.parseInt(plantEnergyField.getText());
-
         int startingAnimals = Integer.parseInt(startingAnimalsField.getText());
         int startingEnergy = Integer.parseInt(startingEnergyField.getText());
         int dailyEnergyConsumption = Integer.parseInt(dailyEnergyConsumptionField.getText());
         int reproductionThreshold = Integer.parseInt(reproductionThresholdField.getText());
         int reproductionCost = Integer.parseInt(reproductionCostField.getText());
-
         int minimumMutations = Integer.parseInt(minimumMutationsField.getText());
         int maximumMutations = Integer.parseInt(maximumMutationsField.getText());
         int genomeLength = Integer.parseInt(genomeLengthField.getText());
+        int scentDays = Integer.parseInt(scentDaysField.getText());
+        double probabilityOfSmelling = Double.parseDouble(probabilityOfSmellingField.getText());
+        int scentRadius = Integer.parseInt(scentRadiusField.getText());
 
         Configuration configuration = new Configuration(
                 new Configuration.MapDimensions(width, height),
@@ -59,7 +62,8 @@ public class ConfigurationPresenter {
                         reproductionThreshold,
                         reproductionCost
                 ),
-                new Configuration.GenotypeParameters(minimumMutations, maximumMutations, genomeLength)
+                new Configuration.GenotypeParameters(minimumMutations, maximumMutations, genomeLength),
+                new Configuration.ScentParameters(scentDays, probabilityOfSmelling, scentRadius)
         );
 
         Simulation simulation = new Simulation(configuration);
@@ -71,7 +75,7 @@ public class ConfigurationPresenter {
         BorderPane viewRoot = loader.load();
 
         SimulationPresenter presenter = loader.getController();
-        presenter.setWorldMap((BasicMap) simulation.getMap(), configuration);
+        presenter.setWorldMap((ScentMap) simulation.getMap(), configuration);
 
         Stage stage = new Stage();
         stage.setTitle("Darwin Simulation");
@@ -82,4 +86,3 @@ public class ConfigurationPresenter {
         engine.runAsyncInThreadPool();
     }
 }
-

@@ -4,6 +4,7 @@ import agh.darwin.Configuration;
 import agh.darwin.supplementary.Vector2i;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class ScentMap extends BasicMap {
     private final HashMap<Vector2i, List<Scent>> scents = new HashMap<>();
@@ -11,8 +12,8 @@ public class ScentMap extends BasicMap {
 
     private final SplittableRandom random;
 
-    public ScentMap(int width, int height, Configuration configuration) {
-        super(width, height, configuration);
+    public ScentMap(int width, int height, Function<Animal, AnimalAccessStatistics> accessStats, Configuration configuration) {
+        super(width, height, accessStats, configuration);
         this.random = new SplittableRandom();
     }
 

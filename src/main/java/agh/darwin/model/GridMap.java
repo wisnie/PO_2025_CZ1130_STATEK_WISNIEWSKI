@@ -1,7 +1,5 @@
 package agh.darwin.model;
 
-import agh.darwin.supplementary.MapEventListener;
-
 public interface GridMap {
     public void place(Animal animal);
 

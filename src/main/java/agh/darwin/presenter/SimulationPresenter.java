@@ -2,10 +2,10 @@ package agh.darwin.presenter;
 
 import agh.darwin.Configuration;
 import agh.darwin.model.Animal;
-import agh.darwin.model.BasicMap;
+import agh.darwin.model.ScentMap; // ZMIANA
 import agh.darwin.model.GridMap;
 import agh.darwin.model.Plant;
-import agh.darwin.supplementary.MapEventListener;
+import agh.darwin.model.MapEventListener;
 import agh.darwin.supplementary.Vector2i;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -16,7 +16,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 import java.util.Comparator;
@@ -28,13 +27,13 @@ public class SimulationPresenter implements MapEventListener {
     private GridPane mapGrid;
     @FXML private Label statsLabel;
 
-    private BasicMap map;
+    private ScentMap map;
     private Configuration configuration;
 
     private static final double JUNGLE_MAP_COVERAGE = 0.2;
 
 
-    public void setWorldMap(BasicMap map, Configuration configuration) {
+    public void setWorldMap(ScentMap map, Configuration configuration) {
         this.map = map;
         this.configuration = configuration;
         map.subscribe(this);
@@ -42,11 +41,12 @@ public class SimulationPresenter implements MapEventListener {
     }
 
     @Override
-    public void mapChanged(GridMap gridMap, String message) {
+    public GridMap mapChanged(GridMap gridMap, String message) {
         Platform.runLater(() -> {
             drawMap();
             statsLabel.setText(message);
         });
+        return gridMap;
     }
 
     private void drawMap() {

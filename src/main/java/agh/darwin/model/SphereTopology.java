@@ -13,8 +13,8 @@ public record SphereTopology(Boundary boundary) {
         Vector2i targetX = switch (direction) {
             case NORTH, SOUTH -> position.justX();
             case NORTHEAST, EAST, SOUTHEAST -> {
-                if (position.justX().equals(boundary.higherBound().justX())) {
-                    yield boundary.higherBound().justX();
+                if (position.justX().equals(boundary.upperBound().justX())) {
+                    yield boundary.upperBound().justX();
                 }
                 yield position.justX().add(moveVector.justX());
             }

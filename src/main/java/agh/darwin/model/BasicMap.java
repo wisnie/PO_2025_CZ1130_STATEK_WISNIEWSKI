@@ -23,7 +23,7 @@ public class BasicMap implements GridMap {
     private final Function<Animal, AnimalAccessStatistics> accessStats;
 
     public BasicMap(int width, int height, Function<Animal, AnimalAccessStatistics> accessStats, Configuration configuration) {
-        Boundary boundary = new Boundary(new Vector2i(0, 0), new Vector2i(width - 1, height - 1));
+        this.boundary = new Boundary(new Vector2i(0, 0), new Vector2i(width - 1, height - 1));
         this.topology = new SphereTopology(boundary);
         this.accessStats = accessStats;
         this.configuration = configuration;
