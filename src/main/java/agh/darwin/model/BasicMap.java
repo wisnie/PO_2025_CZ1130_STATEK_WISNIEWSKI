@@ -34,6 +34,16 @@ public class BasicMap implements GridMap {
     }
 
     @Override
+    public void subscribe(MapEventListener observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void unsubscribe(MapEventListener observer) {
+        observers.remove(observer);
+    }
+
+    @Override
     public void simulateDayProgression() {
         // TODO Refactoring
         for (List<Animal> animalsOnField : List.copyOf(animals.values())) {
@@ -89,6 +99,8 @@ public class BasicMap implements GridMap {
                 place(plant);
             }
         }
+
+        mapChanged("Tu będą statystyki");
     }
 
     private boolean animalIsDead(Animal animal) {
@@ -140,6 +152,20 @@ public class BasicMap implements GridMap {
         );
 
         animals.get(field).add(newborn);
+    }
+
+    public void mapChanged(String message){
+        for (MapEventListener observer : observers){
+            observer.mapChanged(this,message);
+        }
+    }
+
+    public HashMap<Vector2i, List<Animal>> getAnimals(){
+        return animals;
+    }
+
+    public HashMap<Vector2i, Plant> getPlants(){
+        return plants;
     }
 
 }
