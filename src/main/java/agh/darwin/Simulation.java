@@ -11,10 +11,11 @@ import java.util.HashMap;
 public class Simulation implements Runnable {
     private final GridMap simulationMap;
     private final Configuration configuration;
+    private final HashMap<Animal, AnimalStatistic> animalStatistics = new HashMap<>();
 
     public Simulation(Configuration configuration) {
         this.configuration = configuration;
-        this.simulationMap = new BasicMap(configuration.mapDimensions().width(),
+        this.simulationMap = new ScentMap(configuration.mapDimensions().width(),
                 configuration.mapDimensions().height(), configuration);
 
         addStartingEntities();

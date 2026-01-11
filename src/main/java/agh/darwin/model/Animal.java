@@ -21,6 +21,15 @@ public class Animal implements MapEntity {
         this.animalConf = animalConf;
     }
 
+    public void moveTowardsScent(Scent scent) {
+        Vector2i scentOrigin = scent.getOrigin();
+        Vector2i shift = scentOrigin
+                .subtract(position)
+                .chebyshevUnitVector();
+
+        position = position.add(shift);
+    }
+
     public void move(SphereTopology topology) {
         Rotation rotation = switch (genotype.activeGene()) {
             case 0 -> Rotation.ZERO;

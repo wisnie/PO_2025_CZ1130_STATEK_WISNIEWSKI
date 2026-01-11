@@ -1,7 +1,6 @@
 package agh.darwin.model;
 
 import agh.darwin.Configuration;
-import agh.darwin.supplementary.FinitePositionGenerator;
 import agh.darwin.supplementary.MapEventListener;
 import agh.darwin.supplementary.PlantPositionGenerator;
 import agh.darwin.supplementary.Vector2i;
@@ -9,15 +8,20 @@ import agh.darwin.supplementary.Vector2i;
 import java.util.*;
 
 public class BasicMap implements GridMap {
-    private final HashMap<Vector2i, List<Animal>> animals = new HashMap<>();
+    protected final HashMap<Vector2i, List<Animal>> animals = new HashMap<>();
     private final HashMap<Vector2i, Plant> plants = new HashMap<>();
     private final ArrayList<MapEventListener> observers = new ArrayList<>();
+    private final Comparator<Animal> animalComparator = Comparator
+            .comparing(Animal::getEnergy)
+            .thenComparing(animal -> 0.0);
 
-    private final Configuration configuration;
+
+    protected final Configuration configuration;
+    protected final Boundary boundary;
     private final SphereTopology topology;
 
     public BasicMap(int width, int height, Configuration configuration) {
-        Boundary boundary = new Boundary(new Vector2i(0, 0), new Vector2i(width - 1, height - 1));
+        boundary = new Boundary(new Vector2i(0, 0), new Vector2i(width - 1, height - 1));
         this.topology = new SphereTopology(boundary);
         this.configuration = configuration;
 
@@ -45,49 +49,105 @@ public class BasicMap implements GridMap {
 
     @Override
     public void simulateDayProgression() {
-        // TODO Refactoring
-        for (List<Animal> animalsOnField : List.copyOf(animals.values())) {
-            for (Animal animal : List.copyOf(animalsOnField)) {
-                if (animalIsDead(animal)) {
-                    removeAnimal(animal.getPosition(), animal);
-                    continue;
-                }
+        removeDeadAnimals();
+        moveAnimals();
+        feedAnimals();
+        reproduceAnimals();
+        growPlants();
+    }
 
-                moveAnimal(animal);
-                animal.exhaust();
-            }
+    private void removeDeadAnimals() {
+        animals.values().forEach( a -> a.removeIf(this::animalIsDead));
+        animals.values().removeIf(List::isEmpty);
+    }
+
+    private boolean animalIsDead(Animal animal) {
+        return animal.getEnergy().noEnergy();
+    }
+
+    private void moveAnimals() {
+        for (Animal animal : animals.values()
+                .stream()
+                .flatMap(Collection::stream)
+                .toList()) {
+            moveAnimal(animal);
+            animal.exhaust();
         }
 
+        mapChanged("Tu będą statystyki");
+    }
+
+    void moveAnimal(Animal animal) {
+        Vector2i initialField = animal.getPosition();
+        animal.move(topology);
+
+        removeAnimal(initialField, animal);
+        addAnimal(animal);
+    }
+
+    protected void removeAnimal(Vector2i field, Animal animal) {
+        List<Animal> animalsOnField = animals.get(field);
+        animalsOnField.remove(animal);
+
+        if (animalsOnField.isEmpty()) animals.remove(field);
+    }
+
+    protected void addAnimal(Animal animal) {
+        Vector2i field = animal.getPosition();
+        animals.computeIfAbsent(field, k -> new ArrayList<>()).add(animal);
+    }
+
+    private void feedAnimals() {
         for (Map.Entry<Vector2i, List<Animal>> fieldAnimals : animals.entrySet()) {
             Vector2i field = fieldAnimals.getKey();
             List<Animal> animalsOnField = fieldAnimals.getValue();
 
-            Comparator<Animal> strengthSorter = Comparator
-                    .comparing(Animal::getEnergy)
-                    .thenComparing(animal -> 0.0) //trzeba porównać inne parametry wiek, dzieci
-                    .reversed();
-
-            animalsOnField.sort(strengthSorter);
             if (plants.containsKey(field)) {
-               Animal winner = animalsOnField.getFirst();
-               Plant plant = plants.get(field);
-               winner.consumePlant(plant.plantEnergy());
-               plants.remove(field);
-            }
+                Animal winner = Collections.min(animalsOnField, animalComparator);
+                Plant plant = plants.get(field);
 
+                winner.consumePlant(plant.plantEnergy());
+                plants.remove(field);
+            }
+        }
+    }
+
+    private void reproduceAnimals() {
+        for (List<Animal> animalsOnField : animals.values()) {
             List<Animal> animalPair = animalsOnField.stream()
                     .filter((animal) ->
                             animal.getEnergy().amount() > configuration.animalParams().reproductionThreshold())
+                    .sorted(animalComparator)
                     .limit(2)
                     .toList();
 
             if (animalPair.size() == 2) {
-                breedAnimals(animalPair);
+                reproducePair(animalPair);
             }
         }
+    }
 
+    protected void reproducePair(List<Animal> animalPair) {
+        if (animalPair.size() != 2)
+            throw new IllegalArgumentException("Functions must be called with List<Animal> of size 2.");
 
-        // TODO pareto
+        Animal stronger = animalPair.getFirst();
+        Animal weaker = animalPair.getLast();
+        Vector2i field = stronger.getPosition();
+
+        stronger.reproduce();
+        weaker.reproduce();
+
+        Animal newborn = new Animal(field,
+                new Energy(2 * configuration.animalParams().reproductionCost()),
+                Genotype.childGenotype(weaker, stronger),
+                configuration.animalParams()
+        );
+
+        animals.get(field).add(newborn);
+    }
+
+    private void growPlants() {
         PlantPositionGenerator plantPositionGenerator = new PlantPositionGenerator(configuration.mapDimensions().width(),
                 configuration.mapDimensions().height(), configuration.plantParams().plantsPerDay(), plants);
 
@@ -99,61 +159,7 @@ public class BasicMap implements GridMap {
                 place(plant);
             }
         }
-
-        mapChanged("Tu będą statystyki");
     }
-
-    private boolean animalIsDead(Animal animal) {
-        return animal.getEnergy().noEnergy();
-    }
-
-    private void removeAnimal(Vector2i field, Animal animal) {
-        List<Animal> animalsOnField = animals.get(field);
-        animalsOnField.remove(animal);
-
-        if (animalsOnField.isEmpty()) animals.remove(field);
-    }
-
-    private void addAnimal(Animal animal) {
-        Vector2i field = animal.getPosition();
-        if (animals.containsKey(field)) {
-            animals.get(field).add(animal);
-        } else {
-            ArrayList<Animal> animalsOnField = new ArrayList<>();
-            animalsOnField.add(animal);
-            animals.put(field, animalsOnField);
-        }
-    }
-
-    private void moveAnimal(Animal animal) {
-        Vector2i initialField = animal.getPosition();
-        animal.move(topology);
-
-        removeAnimal(initialField, animal);
-        addAnimal(animal);
-    }
-
-    private void breedAnimals(List<Animal> animalsPair) {
-        if (animalsPair.size() != 2)
-            throw new IllegalArgumentException("vetylf saldkjf alsdjf lajsdlf jasdlkf jasldjf ");
-
-        Animal stronger = animalsPair.getFirst();
-        Animal weaker = animalsPair.getLast();
-        Vector2i field = stronger.getPosition();
-
-        stronger.reproduce();
-        weaker.reproduce();
-
-        // TODO, genotype
-        Animal newborn = new Animal(field,
-                new Energy(2 * configuration.animalParams().reproductionCost()),
-                Genotype.childGenotype(weaker, stronger),
-                configuration.animalParams()
-        );
-
-        animals.get(field).add(newborn);
-    }
-
     public void mapChanged(String message){
         for (MapEventListener observer : observers){
             observer.mapChanged(this,message);

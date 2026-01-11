@@ -30,9 +30,9 @@ public record SphereTopology(Boundary boundary) {
         Vector2i targetY = switch (direction) {
             case EAST, WEST -> position.justY();
             case NORTHWEST, NORTH, NORTHEAST -> {
-                if (position.justY().equals(boundary.higherBound().justY())) {
+                if (position.justY().equals(boundary.upperBound().justY())) {
                     targetDirection = targetDirection.rotate(Rotation.ONE_HUNDRED_EIGHTY);
-                    yield boundary.higherBound().justY();
+                    yield boundary.upperBound().justY();
                 }
                 yield position.justY().add(moveVector.justY());
             }
