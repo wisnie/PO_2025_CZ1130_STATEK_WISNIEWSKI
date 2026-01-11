@@ -1,11 +1,12 @@
 package agh.darwin.model;
 
 import agh.darwin.Configuration;
-import agh.darwin.supplementary.MapEventListener;
 import agh.darwin.supplementary.PlantPositionGenerator;
 import agh.darwin.supplementary.Vector2i;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class BasicMap implements GridMap {
     protected final HashMap<Vector2i, List<Animal>> animals = new HashMap<>();
@@ -19,10 +20,12 @@ public class BasicMap implements GridMap {
     protected final Configuration configuration;
     protected final Boundary boundary;
     private final SphereTopology topology;
+    private final Function<Animal, AnimalAccessStatistics> accessStats;
 
-    public BasicMap(int width, int height, Configuration configuration) {
-        boundary = new Boundary(new Vector2i(0, 0), new Vector2i(width - 1, height - 1));
+    public BasicMap(int width, int height, Function<Animal, AnimalAccessStatistics> accessStats, Configuration configuration) {
+        Boundary boundary = new Boundary(new Vector2i(0, 0), new Vector2i(width - 1, height - 1));
         this.topology = new SphereTopology(boundary);
+        this.accessStats = accessStats;
         this.configuration = configuration;
 
     }
@@ -102,6 +105,13 @@ public class BasicMap implements GridMap {
             Vector2i field = fieldAnimals.getKey();
             List<Animal> animalsOnField = fieldAnimals.getValue();
 
+            Comparator<Animal> strengthSorter = Comparator
+                    .comparing(Animal::getEnergy)
+                    .thenComparing(a -> accessStats.apply(a).getAge())
+                    .thenComparing(a -> accessStats.apply(a).getOffspringCount())
+                    .reversed();
+
+            animalsOnField.sort(strengthSorter);
             if (plants.containsKey(field)) {
                 Animal winner = Collections.min(animalsOnField, animalComparator);
                 Plant plant = plants.get(field);
