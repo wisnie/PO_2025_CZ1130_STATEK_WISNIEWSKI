@@ -3,10 +3,10 @@ package agh.darwin.presenter;
 import agh.darwin.Configuration;
 import agh.darwin.Simulation;
 import agh.darwin.SimulationEngine;
-import agh.darwin.model.ScentMap; // ZMIANA
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -17,6 +17,7 @@ import java.util.List;
 public class ConfigurationPresenter {
     @FXML private TextField widthField;
     @FXML private TextField heightField;
+    @FXML private ComboBox<String> mapVariantField;
     @FXML private TextField startingPlantsField;
     @FXML private TextField plantsPerDayField;
     @FXML private TextField plantEnergyField;
@@ -36,6 +37,7 @@ public class ConfigurationPresenter {
     private void onSimulationStartClicked() throws IOException {
         int width = Integer.parseInt(widthField.getText());
         int height = Integer.parseInt(heightField.getText());
+        String mapVariant = mapVariantField.getValue();
         int startingPlants = Integer.parseInt(startingPlantsField.getText());
         int plantsPerDay = Integer.parseInt(plantsPerDayField.getText());
         int plantEnergy = Integer.parseInt(plantEnergyField.getText());
@@ -53,7 +55,7 @@ public class ConfigurationPresenter {
 
         Configuration configuration = new Configuration(
                 new Configuration.MapDimensions(width, height),
-                null,
+                new Configuration.MapVariant(mapVariant),
                 new Configuration.PlantParameters(startingPlants, plantsPerDay, plantEnergy),
                 new Configuration.AnimalParameters(
                         startingAnimals,
@@ -75,7 +77,7 @@ public class ConfigurationPresenter {
         BorderPane viewRoot = loader.load();
 
         SimulationPresenter presenter = loader.getController();
-        presenter.setWorldMap((ScentMap) simulation.getMap(), configuration);
+        presenter.setSimulation(simulation, configuration);
 
         Stage stage = new Stage();
         stage.setTitle("Darwin Simulation");

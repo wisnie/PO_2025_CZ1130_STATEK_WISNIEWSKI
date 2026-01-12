@@ -5,7 +5,7 @@ import agh.darwin.supplementary.FinitePositionGenerator;
 import agh.darwin.supplementary.PlantPositionGenerator;
 import agh.darwin.supplementary.Vector2i;
 
-import java.util.HashMap;
+import java.util.*;
 
 
 public class Simulation implements AnimalEventListener, MapEventListener, Runnable {
@@ -13,14 +13,19 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
 
     private final GridMap simulationMap;
     private final Configuration configuration;
-    private final HashMap<Animal, AnimalStatistic> animalStatistics = new HashMap<>();
+    private boolean paused = false;
 
     int simulationDay = 0;
 
     public Simulation(Configuration configuration) {
         this.configuration = configuration;
-        this.simulationMap = new ScentMap(configuration.mapDimensions().width(),
-                configuration.mapDimensions().height(), this::provideStatistics, configuration);
+        this.simulationMap = switch (configuration.mapVariant().mapVariant()) {
+            case "Scent Map" -> new ScentMap(configuration.mapDimensions().width(),
+                    configuration.mapDimensions().height(), this::provideStatistics, configuration);
+            case "Basic Map" -> new BasicMap(configuration.mapDimensions().width(),
+                    configuration.mapDimensions().height(), this::provideStatistics, configuration);
+            default -> throw new IllegalArgumentException("Invalid map variant");
+        };
 
         this.simulationMap.subscribeAnimal(this);
 
@@ -29,14 +34,35 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
 
     @Override
     public void run() {
-        for (int i = 0; i <= 100; i++) {
+        while (true) {
+            synchronized (this) {
+                while (paused) {
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        IO.println("Simulation interrupted");
+                        return;
+                    }
+                }
+            }
+
             simulationMap.simulateDayProgression();
+            simulationDay++;
             try {
-                Thread.sleep(50);
+                Thread.sleep(300);
             } catch (InterruptedException e) {
                 IO.println("Simulation thread interrupted");
             }
         }
+    }
+
+    public synchronized void pause() {
+        paused = true;
+    }
+
+    public synchronized void resume() {
+        paused = false;
+        notifyAll();
     }
 
     void addStartingEntities() {
@@ -85,6 +111,74 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
     @Override
     public GridMap mapChanged(GridMap gridMap, String message) {
         return gridMap;
+    }
+
+    public synchronized String getStatistics() {
+        HashMap<Vector2i, List<Animal>> animals = simulationMap.getAnimals();
+        HashMap<Vector2i, Plant> plants = simulationMap.getPlants();
+        Map<Genotype, Integer> genotypeCounts = new HashMap<>();
+        long aliveNumber = 0;
+        double totalEnergy = 0;
+        double totalChildren = 0;
+
+        for (List<Animal> animalList : animals.values()) {
+            if (animalList == null) continue;
+            for (Animal animal : animalList) {
+                aliveNumber++;
+                totalEnergy += animal.getEnergy().amount();
+
+                AnimalStatistic stat = statistics.get(animal);
+                if (stat != null) {
+                    totalChildren += stat.getOffspringCount();
+                }
+
+                Genotype genotype = animal.getGenotype();
+                genotypeCounts.put(genotype, genotypeCounts.getOrDefault(genotype, 0) + 1);
+            }
+        }
+
+        Genotype mostPopular = null;
+        int maxCount = 0;
+        for (Map.Entry<Genotype, Integer> entry : genotypeCounts.entrySet()) {
+            if (entry.getValue() > maxCount) {
+                maxCount = entry.getValue();
+                mostPopular = entry.getKey();
+            }
+        }
+
+        double ageSum = 0;
+        int deadCount = 0;
+        for (AnimalStatistic stat : statistics.values()) {
+            if (stat.getDeathDay() != -1) {
+                ageSum += (stat.getDeathDay() - stat.getBirthDay());
+                deadCount++;
+            }
+        }
+
+        double avgEnergy = (aliveNumber > 0) ? totalEnergy / aliveNumber : 0;
+        double averageChildrenNumber = (aliveNumber > 0) ? totalChildren / aliveNumber : 0;
+        double averageAge = (deadCount > 0) ? ageSum / deadCount : 0;
+
+        int width = configuration.mapDimensions().width();
+        int height = configuration.mapDimensions().height();
+        Set<Vector2i> occupiedPositions = new HashSet<>();
+        occupiedPositions.addAll(animals.keySet());
+        occupiedPositions.addAll(plants.keySet());
+        long freeFields = (long) width * height - occupiedPositions.size();
+        long plantNumber = plants.size();
+
+        return String.format("""
+                        Day: %d
+                        Animal Number: %d 
+                        Plant Number: %d
+                        Free Fields: %d
+                        Most Popular Genotype: %s
+                        Average energy: %.1f
+                        Average Age (Dead): %.1f
+                        Average Children Number (Alive): %.1f
+                        """,
+                simulationDay, aliveNumber, plantNumber, freeFields,
+                mostPopular, avgEnergy, averageAge, averageChildrenNumber);
     }
 
     public GridMap getMap() {
