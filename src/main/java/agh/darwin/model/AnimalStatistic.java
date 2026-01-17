@@ -4,7 +4,7 @@ public class AnimalStatistic {
     private final int birthDay;
     private int plantsEaten;
     private int offspringCount;
-    private int deathDay = - 1;
+    private  int deathDay = -1;
 
     public AnimalStatistic(int birthDay) {
         this.birthDay = birthDay;
@@ -28,6 +28,10 @@ public class AnimalStatistic {
 
     public int getDeathDay() {
         return deathDay;
+    }
+
+    public int getPlantsEaten() {
+        return plantsEaten;
     }
 
     public void handleEvent(AnimalEvent animalEvent, int day) {

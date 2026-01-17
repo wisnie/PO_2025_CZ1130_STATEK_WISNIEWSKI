@@ -49,7 +49,7 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
             simulationMap.simulateDayProgression();
             simulationDay++;
             try {
-                Thread.sleep(300);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 IO.println("Simulation thread interrupted");
             }
@@ -87,6 +87,7 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
 
     public AnimalAccessStatistics provideStatistics(Animal animal) {
         AnimalStatistic animalStatistic = statistics.get(animal);
+
         return new AnimalAccessStatistics() {
             @Override
             public int getAge() {
@@ -96,6 +97,35 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
             @Override
             public int getOffspringCount() {
                 return animalStatistic.getOffspringCount();
+            }
+
+            @Override
+            public int getPlantsEaten() { return animalStatistic.getPlantsEaten(); }
+
+            @Override
+            public int getEnergyAmount(){ return animal.getEnergy().amount(); }
+
+            @Override
+            public int getActiveGene(){ return animal.getGenotype().activeGene();}
+
+            @Override
+            public String getGenotype(){ return animal.getGenotype().toString(); }
+
+            @Override
+            public String getDeathDay(){
+                return animalStatistic.getDeathDay() != -1 ? String.valueOf(animalStatistic.getDeathDay()) : "Animal is alive";}
+
+            @Override
+            public String toString() {
+                return String.format("""
+                        Age: %d,
+                        Death Day: %s,
+                        Offspring Count: %d,
+                        Plants Eaten: %d,
+                        Energy Amount: %d,
+                        Active Gene: %d
+                        Genotype: %s""",
+                         getAge(), getDeathDay() ,getOffspringCount(), getPlantsEaten(), getEnergyAmount(), getActiveGene(), getGenotype());
             }
         };
     }

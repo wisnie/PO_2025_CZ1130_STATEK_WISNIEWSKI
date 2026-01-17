@@ -129,6 +129,7 @@ public class BasicMap implements GridMap {
                 Plant plant = plants.get(field);
 
                 winner.consumePlant(plant.plantEnergy());
+                animalChanged(winner, AnimalEvent.PLANT_CONSUMPTION);
                 plants.remove(field);
             }
         }

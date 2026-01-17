@@ -74,4 +74,9 @@ public class Animal implements MapEntity {
     public Vector2i getPosition() {
         return position;
     }
+
+    @Override
+    public String toString() {
+        return "Animal with " + energy.amount() + " energy";
+    }
 }

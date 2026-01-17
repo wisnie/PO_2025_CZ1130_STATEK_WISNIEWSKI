@@ -23,7 +23,7 @@
 
     <HBox spacing="10" alignment="CENTER">
         <Label text="Map Variant:"/>
-        <ComboBox fx:id="mapVariantField" value="Choose Map Variant">
+        <ComboBox fx:id="mapVariantField" value="Basic Map">
             <items>
                 <FXCollections fx:factory="observableArrayList">
                     <String fx:value="Basic Map" />
