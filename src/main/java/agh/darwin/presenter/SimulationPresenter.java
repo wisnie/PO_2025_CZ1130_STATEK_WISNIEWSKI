@@ -80,10 +80,14 @@ public class SimulationPresenter implements MapEventListener {
     @Override
     public GridMap mapChanged(GridMap gridMap, String message) {
         Platform.runLater(() -> {
-            drawMap();
-            statsLabel.setText(simulation.getStatistics());
-            if (trackedAnimal != null) {
-                updateTrackedAnimalStats();
+            if (simulation == null) return;
+
+            synchronized (simulation) {
+                drawMap();
+                statsLabel.setText(simulation.getStatistics());
+                if (trackedAnimal != null) {
+                    updateTrackedAnimalStats();
+                }
             }
         });
 

@@ -46,7 +46,10 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
                 }
             }
 
-            simulationMap.simulateDayProgression();
+            synchronized (this) {
+                simulationMap.simulateDayProgression();
+            }
+
             simulationDay++;
             try {
                 Thread.sleep(50);
