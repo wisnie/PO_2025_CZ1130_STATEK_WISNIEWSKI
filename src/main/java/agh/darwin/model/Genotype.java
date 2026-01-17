@@ -76,8 +76,7 @@ public final class Genotype implements Iterable<Integer> {
 
     @Override
     public String toString() {
-        return "Genotype[" +
-                "genes=" + genes + ']';
+        return genes.toString();
     }
 
 }

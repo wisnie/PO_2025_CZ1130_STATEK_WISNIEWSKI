@@ -2,6 +2,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 <VBox alignment="CENTER" spacing="10" xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="agh.darwin.presenter.ConfigurationPresenter"
@@ -17,6 +19,18 @@
     <HBox spacing="10" alignment="CENTER">
         <Label text="Height:"/>
         <TextField fx:id="heightField" text="40"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Map Variant:"/>
+        <ComboBox fx:id="mapVariantField" value="Choose Map Variant">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Basic Map" />
+                    <String fx:value="Scent Map" />
+                </FXCollections>
+            </items>
+        </ComboBox>
     </HBox>
 
     <HBox spacing="10" alignment="CENTER">

@@ -12,7 +12,7 @@ public record Configuration(
 ) {
     public record MapDimensions(int width, int height) {}
 
-    public record MapVariant(GridMap mapVariant) {}
+    public record MapVariant(String mapVariant) {}
 
     public record PlantParameters(int startingPlants, int plantsPerDay, int plantEnergy) {}
 

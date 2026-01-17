@@ -1,8 +1,8 @@
 package agh.darwin.presenter;
 
 import agh.darwin.Configuration;
+import agh.darwin.Simulation;
 import agh.darwin.model.Animal;
-import agh.darwin.model.ScentMap; // ZMIANA
 import agh.darwin.model.GridMap;
 import agh.darwin.model.Plant;
 import agh.darwin.model.MapEventListener;
@@ -10,6 +10,7 @@ import agh.darwin.supplementary.Vector2i;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -25,26 +26,44 @@ import java.util.List;
 public class SimulationPresenter implements MapEventListener {
     @FXML
     private GridPane mapGrid;
-    @FXML private Label statsLabel;
+    @FXML
+    private Label statsLabel;
+    @FXML
+    private Button pauseButton;
 
-    private ScentMap map;
+    private GridMap map;
     private Configuration configuration;
+    private Simulation simulation;
+    private boolean pause = false;
 
     private static final double JUNGLE_MAP_COVERAGE = 0.2;
 
 
-    public void setWorldMap(ScentMap map, Configuration configuration) {
-        this.map = map;
+    public void setSimulation(Simulation simulation, Configuration configuration) {
+        this.simulation = simulation;
+        this.map = simulation.getMap();
         this.configuration = configuration;
         map.subscribe(this);
         drawMap();
+    }
+
+    @FXML
+    private void onPauseClicked() {
+        if (pause) {
+            simulation.resume();
+            pauseButton.setText("Pause");
+        } else {
+            simulation.pause();
+            pauseButton.setText("Resume");
+        }
+        pause = !pause;
     }
 
     @Override
     public GridMap mapChanged(GridMap gridMap, String message) {
         Platform.runLater(() -> {
             drawMap();
-            statsLabel.setText(message);
+            statsLabel.setText(simulation.getStatistics());
         });
 
         return gridMap;

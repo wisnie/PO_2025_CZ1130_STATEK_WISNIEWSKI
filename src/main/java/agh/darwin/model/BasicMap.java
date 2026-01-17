@@ -71,7 +71,16 @@ public class BasicMap implements GridMap {
     }
 
     private void removeDeadAnimals() {
-        animals.values().forEach( a -> a.removeIf(this::animalIsDead));
+        for (List<Animal> animalList : animals.values()) {
+            List<Animal> deadAnimals = new ArrayList<>();
+            for (Animal animal : animalList) {
+                if (this.animalIsDead(animal)) {
+                    animalChanged(animal,AnimalEvent.DEATH);
+                    deadAnimals.add(animal);
+                }
+            }
+            animalList.removeAll(deadAnimals);
+        }
         animals.values().removeIf(List::isEmpty);
     }
 
@@ -151,13 +160,16 @@ public class BasicMap implements GridMap {
         stronger.reproduce();
         weaker.reproduce();
 
+        animalChanged(stronger, AnimalEvent.REPRODUCTION);
+        animalChanged(weaker, AnimalEvent.REPRODUCTION);
+
         Animal newborn = new Animal(field,
                 new Energy(2 * configuration.animalParams().reproductionCost()),
                 Genotype.childGenotype(weaker, stronger),
                 configuration.animalParams()
         );
 
-        animals.get(field).add(newborn);
+        place(newborn);
     }
 
     private void growPlants() {
@@ -185,10 +197,12 @@ public class BasicMap implements GridMap {
         }
     }
 
+    @Override
     public HashMap<Vector2i, List<Animal>> getAnimals(){
         return animals;
     }
 
+    @Override
     public HashMap<Vector2i, Plant> getPlants(){
         return plants;
     }
