@@ -2,15 +2,14 @@ package agh.darwin.presenter;
 
 import agh.darwin.Configuration;
 import agh.darwin.Simulation;
-import agh.darwin.model.Animal;
-import agh.darwin.model.GridMap;
-import agh.darwin.model.Plant;
-import agh.darwin.model.MapEventListener;
+import agh.darwin.model.*;
 import agh.darwin.supplementary.Vector2i;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.HPos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -29,12 +28,17 @@ public class SimulationPresenter implements MapEventListener {
     @FXML
     private Label statsLabel;
     @FXML
+    private Label animalStatsLabel;
+    @FXML
     private Button pauseButton;
+    @FXML
+    private ComboBox<Animal> animalListField;
 
     private GridMap map;
     private Configuration configuration;
     private Simulation simulation;
     private boolean pause = false;
+    private Animal trackedAnimal = null;
 
     private static final double JUNGLE_MAP_COVERAGE = 0.2;
 
@@ -44,6 +48,16 @@ public class SimulationPresenter implements MapEventListener {
         this.map = simulation.getMap();
         this.configuration = configuration;
         map.subscribe(this);
+        animalListField.setOnAction(event -> {
+            Animal selected = animalListField.getValue();
+            if (selected != null) {
+                this.trackedAnimal = selected;
+                updateTrackedAnimalStats();
+                drawMap();
+            }
+        });
+        animalListField.setDisable(true);
+        drawMap();
         drawMap();
     }
 
@@ -52,9 +66,13 @@ public class SimulationPresenter implements MapEventListener {
         if (pause) {
             simulation.resume();
             pauseButton.setText("Pause");
+            animalListField.setDisable(true);
+            animalListField.setItems(FXCollections.observableArrayList());
         } else {
             simulation.pause();
             pauseButton.setText("Resume");
+            animalListField.setDisable(false);
+            animalListField.setPromptText("Click on animal");
         }
         pause = !pause;
     }
@@ -62,11 +80,27 @@ public class SimulationPresenter implements MapEventListener {
     @Override
     public GridMap mapChanged(GridMap gridMap, String message) {
         Platform.runLater(() -> {
-            drawMap();
-            statsLabel.setText(simulation.getStatistics());
+            if (simulation == null) return;
+
+            synchronized (simulation) {
+                drawMap();
+                statsLabel.setText(simulation.getStatistics());
+                if (trackedAnimal != null) {
+                    updateTrackedAnimalStats();
+                }
+            }
         });
 
         return gridMap;
+    }
+
+    private void updateTrackedAnimalStats() {
+        if (trackedAnimal == null) {
+            animalStatsLabel.setText("No animal choosen");
+            return;
+        }
+        AnimalAccessStatistics stats = simulation.provideStatistics(trackedAnimal);
+        animalStatsLabel.setText(stats.toString());
     }
 
     private void drawMap() {
@@ -124,15 +158,21 @@ public class SimulationPresenter implements MapEventListener {
 
                         double startEnergy = configuration.animalParams().startingEnergy();
                         double currentEnergy = winner.getEnergy().amount();
-                        double energyRatio = currentEnergy / startEnergy;
+                        double energyRatio = Math.min(currentEnergy/startEnergy, 1.0);
 
-                        if (energyRatio <= 0.5) {
-                            animal.setFill(Color.RED);
-                        } else if (energyRatio <= 1) {
-                            animal.setFill(Color.ORANGE);
-                        } else {
-                            animal.setFill(Color.BLUE);
-                        }
+                        animal.setFill(Color.LIGHTBLUE.interpolate(Color.DARKBLUE, energyRatio));
+
+                        final List<Animal> animalsOnCLickedField = animalsOnField;
+
+                        animal.setOnMouseClicked(event -> {
+                            if (pause) {
+                                animalListField.setItems(FXCollections.observableArrayList(animalsOnCLickedField));
+                                if (!animalsOnCLickedField.isEmpty()) {
+                                    animalListField.getSelectionModel().select(0);
+                                }
+                            }
+                        });
+
 
                         cell.getChildren().add(animal);
                     }
