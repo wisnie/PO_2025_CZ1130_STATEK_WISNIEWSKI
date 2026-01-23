@@ -18,6 +18,7 @@ public class ConfigurationPresenter {
     @FXML private TextField widthField;
     @FXML private TextField heightField;
     @FXML private ComboBox<String> mapVariantField;
+    @FXML private TextField durationOfOneDay;
     @FXML private TextField startingPlantsField;
     @FXML private TextField plantsPerDayField;
     @FXML private TextField plantEnergyField;
@@ -38,6 +39,7 @@ public class ConfigurationPresenter {
         int width = Integer.parseInt(widthField.getText());
         int height = Integer.parseInt(heightField.getText());
         String mapVariant = mapVariantField.getValue();
+        int dayLength = Integer.parseInt(durationOfOneDay.getText());
         int startingPlants = Integer.parseInt(startingPlantsField.getText());
         int plantsPerDay = Integer.parseInt(plantsPerDayField.getText());
         int plantEnergy = Integer.parseInt(plantEnergyField.getText());
@@ -65,7 +67,8 @@ public class ConfigurationPresenter {
                         reproductionCost
                 ),
                 new Configuration.GenotypeParameters(minimumMutations, maximumMutations, genomeLength),
-                new Configuration.ScentParameters(scentDays, probabilityOfSmelling, scentRadius)
+                new Configuration.ScentParameters(scentDays, probabilityOfSmelling, scentRadius),
+                new Configuration.DayLength(dayLength)
         );
 
         Simulation simulation = new Simulation(configuration);
