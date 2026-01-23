@@ -18,11 +18,27 @@ public record Vector2i(int x, int y) {
     }
 
     public boolean precedes(Vector2i other) {
-        return x <= other.x && y <= other.y;
+        return precedesX(other) && precedesY(other);
+    }
+
+    public boolean precedesX(Vector2i other) {
+        return  x <= other.x;
+    }
+
+    public boolean precedesY(Vector2i other) {
+        return y <= other.y;
     }
 
     public boolean follows(Vector2i other) {
-        return x >= other.x && y >= other.y;
+        return followsX(other) && followsY(other);
+    }
+
+    public boolean followsX(Vector2i other) {
+        return x >= other.x;
+    }
+
+    public boolean followsY(Vector2i other) {
+        return y >= other.y;
     }
 
     public Vector2i upperRight(Vector2i other) {
