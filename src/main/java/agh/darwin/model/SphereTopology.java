@@ -1,51 +1,48 @@
 package agh.darwin.model;
 
 import agh.darwin.supplementary.OrdinalDirection;
-import agh.darwin.supplementary.Rotation;
 import agh.darwin.supplementary.Setting;
 import agh.darwin.supplementary.Vector2i;
 
 public record SphereTopology(Boundary boundary) {
     Setting moveForward(Vector2i position, OrdinalDirection direction) {
+        Vector2i targetField = position.add(direction.toUnitVector());
         OrdinalDirection targetDirection = direction;
 
-        Vector2i moveVector = direction.toUnitVector();
-        Vector2i targetX = switch (direction) {
-            case NORTH, SOUTH -> position.justX();
-            case NORTHEAST, EAST, SOUTHEAST -> {
-                if (position.justX().equals(boundary.upperBound().justX())) {
-                    yield boundary.lowerBound().justX();
-                }
-                yield position.justX().add(moveVector.justX());
-            }
+        if (targetField.followsX(boundary.upperBound())) {
+            targetField = targetField.justY().add(boundary.lowerBound().justX());
+        }
 
-            case SOUTHWEST, WEST, NORTHWEST -> {
-                if (position.justX().equals(boundary.lowerBound().justX())) {
-                    yield boundary.upperBound().justX();
-                }
-                yield position.justX().add(moveVector.justX());
-            }
-        };
+        if (targetField.precedesX(boundary.lowerBound())) {
+            targetField = targetField.justY().add(boundary.upperBound().justX());
+        }
 
-        Vector2i targetY = switch (direction) {
-            case EAST, WEST -> position.justY();
-            case NORTHWEST, NORTH, NORTHEAST -> {
-                if (position.justY().equals(boundary.upperBound().justY())) {
-                    targetDirection = targetDirection.rotate(Rotation.ONE_HUNDRED_EIGHTY);
-                    yield boundary.upperBound().justY();
-                }
-                yield position.justY().add(moveVector.justY());
-            }
+        if (targetField.followsY(boundary.upperBound())) {
+            targetField = targetField.justX().add(boundary.upperBound().justY());
+            targetDirection = switch (targetDirection) {
+                case NORTH -> OrdinalDirection.SOUTH;
+                case NORTHEAST -> OrdinalDirection.SOUTHEAST;
+                case NORTHWEST -> OrdinalDirection.SOUTHWEST;
+                default ->
+                        throw new IllegalArgumentException(
+                                "Inconsistent parameters: unit vector exceeds upper y bound," +
+                                        " but direction not North!");
+            };
+        }
 
-            case SOUTHEAST, SOUTH, SOUTHWEST -> {
-                if (position.justY().equals(boundary.lowerBound().justY())) {
-                    targetDirection = targetDirection.rotate(Rotation.ONE_HUNDRED_EIGHTY);
-                    yield boundary.lowerBound().justY();
-                }
-                yield position.justY().add(moveVector.justY());
-            }
-        };
+        if (targetField.precedesY(boundary.lowerBound())) {
+            targetField = targetField.justX().add(boundary.lowerBound().justY());
+            targetDirection = switch (targetDirection) {
+                case SOUTH -> OrdinalDirection.NORTH;
+                case SOUTHEAST -> OrdinalDirection.NORTHEAST;
+                case SOUTHWEST -> OrdinalDirection.NORTHWEST;
+                default ->
+                        throw new IllegalArgumentException(
+                                "Inconsistent parameters: unit vector below lower y bound," +
+                                        " but direction not South!");
+            };
+        }
 
-        return new Setting(targetX.add(targetY), targetDirection);
+        return new Setting(targetField, targetDirection);
     }
 }
