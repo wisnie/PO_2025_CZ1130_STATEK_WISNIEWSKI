@@ -14,7 +14,7 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
     private final GridMap simulationMap;
     private final Configuration configuration;
     private boolean paused = false;
-
+    private SimulationStatistics simulationStatistics;
     int simulationDay = 0;
 
     public Simulation(Configuration configuration) {
@@ -48,6 +48,7 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
 
             synchronized (this) {
                 simulationMap.simulateDayProgression();
+                simulationStatistics = makeStatistics();
             }
 
             simulationDay++;
@@ -146,7 +147,7 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
         return gridMap;
     }
 
-    public synchronized String getStatistics() {
+    public synchronized SimulationStatistics makeStatistics() {
         HashMap<Vector2i, List<Animal>> animals = simulationMap.getAnimals();
         HashMap<Vector2i, Plant> plants = simulationMap.getPlants();
         Map<Genotype, Integer> genotypeCounts = new HashMap<>();
@@ -200,9 +201,16 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
         long freeFields = (long) width * height - occupiedPositions.size();
         long plantNumber = plants.size();
 
-        return String.format("""
+        return new SimulationStatistics(aliveNumber, plantNumber, freeFields, mostPopular, avgEnergy, averageAge,
+                averageChildrenNumber);
+    }
+
+
+
+    public synchronized String getStatistics () {
+                return String.format("""
                         Day: %d
-                        Animal Number: %d 
+                        Animal Number: %d
                         Plant Number: %d
                         Free Fields: %d
                         Most Popular Genotype: %s
@@ -210,8 +218,13 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
                         Average Age (Dead): %.1f
                         Average Children Number (Alive): %.1f
                         """,
-                simulationDay, aliveNumber, plantNumber, freeFields,
-                mostPopular, avgEnergy, averageAge, averageChildrenNumber);
+                simulationDay, simulationStatistics.aliveNumber(), simulationStatistics.plantNumber(),
+                simulationStatistics.freeFields() ,simulationStatistics.mostPopularGenotype(),
+                simulationStatistics.averageEnergy(), simulationStatistics.averageAge(), simulationStatistics.averageChildren());
+    }
+
+    public synchronized Genotype getMostPopularGenotype() {
+        return simulationStatistics.mostPopularGenotype();
     }
 
     public GridMap getMap() {

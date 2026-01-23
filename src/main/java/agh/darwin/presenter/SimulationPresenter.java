@@ -152,9 +152,17 @@ public class SimulationPresenter implements MapEventListener {
                                 .thenComparing(animal -> 0.0)
                                 .reversed();
 
+                        Rectangle animal = new Rectangle(cellSize, cellSize);
                         animalsOnField.sort(strengthSorter);
                         Animal winner = animalsOnField.getFirst();
-                        Rectangle animal = new Rectangle(cellSize, cellSize);
+                        if (winner.getGenotype().equals(simulation.getMostPopularGenotype())) {
+                            animal =  new Rectangle(cellSize*0.8, cellSize*0.8);
+                            Rectangle border = new Rectangle(cellSize, cellSize);
+                            border.setStroke(Color.RED);
+                            cell.getChildren().add(border);
+
+                        }
+
 
                         double startEnergy = configuration.animalParams().startingEnergy();
                         double currentEnergy = winner.getEnergy().amount();
