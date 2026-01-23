@@ -11,9 +11,7 @@ public record SphereTopology(Boundary boundary) {
 
         if (targetField.followsX(boundary.upperBound())) {
             targetField = targetField.justY().add(boundary.lowerBound().justX());
-        }
-
-        if (targetField.precedesX(boundary.lowerBound())) {
+        } else if (targetField.precedesX(boundary.lowerBound())) {
             targetField = targetField.justY().add(boundary.upperBound().justX());
         }
 
@@ -28,9 +26,7 @@ public record SphereTopology(Boundary boundary) {
                                 "Inconsistent parameters: unit vector exceeds upper y bound," +
                                         " but direction not North!");
             };
-        }
-
-        if (targetField.precedesY(boundary.lowerBound())) {
+        } else if (targetField.precedesY(boundary.lowerBound())) {
             targetField = targetField.justX().add(boundary.lowerBound().justY());
             targetDirection = switch (targetDirection) {
                 case SOUTH -> OrdinalDirection.NORTH;

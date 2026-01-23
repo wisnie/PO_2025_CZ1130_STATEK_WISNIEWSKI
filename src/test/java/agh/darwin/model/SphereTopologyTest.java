@@ -52,21 +52,6 @@ class SphereTopologyTest {
     @Test
     void teleportsUponHittingVerticalBoundary() {
         SphereTopology topology = new SphereTopology(BOUNDARY);
-        Vector2i position = new Vector2i(5, 9);
-
-        Setting setting = topology.moveForward(position, OrdinalDirection.NORTH);
-        assertEquals(OrdinalDirection.SOUTH, setting.direction());
-        assertEquals(new Vector2i(5, 9), setting.position());
-
-        position = new Vector2i(5, 0);
-        setting = topology.moveForward(position, OrdinalDirection.SOUTH);
-        assertEquals(OrdinalDirection.NORTH, setting.direction());
-        assertEquals(new Vector2i(5, 0), setting.position());
-    }
-
-    @Test
-    void bouncesBackUponHittingPole() {
-        SphereTopology topology = new SphereTopology(BOUNDARY);
         Vector2i position = new Vector2i(0, 5);
 
         Setting setting = topology.moveForward(position, OrdinalDirection.WEST);
@@ -77,6 +62,21 @@ class SphereTopologyTest {
         setting = topology.moveForward(position, OrdinalDirection.EAST);
         assertEquals(OrdinalDirection.EAST, setting.direction());
         assertEquals(new Vector2i(0, 5), setting.position());
+    }
+
+    @Test
+    void bouncesBackUponHittingPole() {
+        SphereTopology topology = new SphereTopology(BOUNDARY);
+        Vector2i position = new Vector2i(5, 9);
+
+        Setting setting = topology.moveForward(position, OrdinalDirection.NORTH);
+        assertEquals(OrdinalDirection.SOUTH, setting.direction());
+        assertEquals(new Vector2i(5, 9), setting.position());
+
+        position = new Vector2i(5, 0);
+        setting = topology.moveForward(position, OrdinalDirection.SOUTH);
+        assertEquals(OrdinalDirection.NORTH, setting.direction());
+        assertEquals(new Vector2i(5, 0), setting.position());
     }
 
     @Test
