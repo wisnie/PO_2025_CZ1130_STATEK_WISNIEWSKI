@@ -148,7 +148,7 @@ public class ConfigurationPresenter {
         stage.setTitle("Darwin Simulation");
         stage.setScene(new Scene(viewRoot));
         stage.show();
-        
+
         SimulationEngine engine = new SimulationEngine(List.of(simulation));
 
         stage.setOnCloseRequest(event -> {

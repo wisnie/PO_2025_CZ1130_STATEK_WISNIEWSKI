@@ -12,12 +12,12 @@
     <Label text="Configuration" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
 
     <HBox spacing="10" alignment="CENTER">
-        <Label text="Width:"/>
+        <Label text="Width (0-80):"/>
         <TextField fx:id="widthField" text="40"/>
     </HBox>
 
     <HBox spacing="10" alignment="CENTER">
-        <Label text="Height:"/>
+        <Label text="Height (0-80):"/>
         <TextField fx:id="heightField" text="40"/>
     </HBox>
 
@@ -34,47 +34,47 @@
     </HBox>
 
     <HBox spacing="10" alignment="CENTER">
-        <Label text="Duration Of One Day:"/>
+        <Label text="Duration Of One Day (50ms-3000ms):"/>
         <TextField fx:id="durationOfOneDay" text="50"/>
     </HBox>
 
     <HBox spacing="10" alignment="CENTER">
-        <Label text="Starting Plants:"/>
+        <Label text="Starting Plants (0-Width*Heigth):"/>
         <TextField fx:id="startingPlantsField" text="50"/>
     </HBox>
 
     <HBox spacing="10" alignment="CENTER">
-        <Label text="Plants Per Day:"/>
+        <Label text="Plants Per Day (0-Width*Heigth):"/>
         <TextField fx:id="plantsPerDayField" text="15"/>
     </HBox>
 
     <HBox spacing="10" alignment="CENTER">
-        <Label text="Plant Energy:"/>
+        <Label text="Plant Energy (>=0):"/>
         <TextField fx:id="plantEnergyField" text="25"/>
     </HBox>
 
     <HBox spacing="10" alignment="CENTER">
-        <Label text="Starting Animals:"/>
+        <Label text="Starting Animals (0-Width*Heigth):"/>
         <TextField fx:id="startingAnimalsField" text="30"/>
     </HBox>
 
     <HBox spacing="10" alignment="CENTER">
-        <Label text="Starting Energy:"/>
+        <Label text="Starting Energy (>=0):"/>
         <TextField fx:id="startingEnergyField" text="60"/>
     </HBox>
 
     <HBox spacing="10" alignment="CENTER">
-        <Label text="Daily Energy Consumption:"/>
+        <Label text="Daily Energy Consumption (>=0):"/>
         <TextField fx:id="dailyEnergyConsumptionField" text="2"/>
     </HBox>
 
     <HBox spacing="10" alignment="CENTER">
-        <Label text="Reproduction Threshold:"/>
+        <Label text="Reproduction Threshold (>=0):"/>
         <TextField fx:id="reproductionThresholdField" text="40"/>
     </HBox>
 
     <HBox spacing="10" alignment="CENTER">
-        <Label text="Reproduction Cost:"/>
+        <Label text="Reproduction Cost (>=0):"/>
         <TextField fx:id="reproductionCostField" text="20"/>
     </HBox>
 
@@ -89,12 +89,12 @@
     </HBox>
 
     <HBox spacing="10" alignment="CENTER">
-        <Label text="Genome Length:"/>
+        <Label text="Genome Length (>=0):"/>
         <TextField fx:id="genomeLengthField" text="8"/>
     </HBox>
 
     <HBox spacing="10" alignment="CENTER">
-        <Label text="Scent Days:"/>
+        <Label text="Scent Days (>=0):"/>
         <TextField fx:id="scentDaysField" text="3"/>
     </HBox>
 
@@ -104,7 +104,7 @@
     </HBox>
 
     <HBox spacing="10" alignment="CENTER">
-        <Label text="Scent Radius:"/>
+        <Label text="Scent Radius (>=0):"/>
         <TextField fx:id="scentRadiusField" text="5"/>
     </HBox>
 
