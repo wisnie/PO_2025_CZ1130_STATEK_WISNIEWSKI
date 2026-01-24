@@ -20,7 +20,7 @@ public class Scent {
     }
 
     public void decreaseLongevity() {
-        scentLongevityInDays--;
+        scentLongevityInDays = Math.max(scentLongevityInDays - 1, 0);
     }
 
     public void increaseLongevity(int amount) {
