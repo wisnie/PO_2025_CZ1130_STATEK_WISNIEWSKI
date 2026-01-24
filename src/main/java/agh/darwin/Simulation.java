@@ -14,6 +14,7 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
     private final GridMap simulationMap;
     private final Configuration configuration;
     private boolean paused = false;
+    private boolean active = true;
     private SimulationStatistics simulationStatistics;
     int simulationDay = 0;
 
@@ -46,7 +47,9 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
                     }
                 }
             }
-
+            if (!active) {
+                break;
+            }
             synchronized (this) {
                 simulationMap.simulateDayProgression();
                 simulationStatistics = makeStatistics();
@@ -57,6 +60,7 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
                 Thread.sleep(dayLength);
             } catch (InterruptedException e) {
                 IO.println("Simulation thread interrupted");
+                active = false;
             }
         }
     }
@@ -68,6 +72,10 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
     public synchronized void resume() {
         paused = false;
         notifyAll();
+    }
+
+    public synchronized void stop() {
+        active = false;
     }
 
     void addStartingEntities() {

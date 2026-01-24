@@ -150,6 +150,10 @@ public class ConfigurationPresenter {
         stage.show();
 
         SimulationEngine engine = new SimulationEngine(List.of(simulation));
+
+        stage.setOnCloseRequest(event -> {
+            engine.terminate();
+        });
         engine.runAsyncInThreadPool();
     }
 }
