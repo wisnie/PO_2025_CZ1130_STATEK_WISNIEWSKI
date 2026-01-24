@@ -166,7 +166,8 @@ public class BasicMap implements GridMap {
 
         Animal newborn = new Animal(field,
                 new Energy(2 * configuration.animalParams().reproductionCost()),
-                Genotype.childGenotype(weaker, stronger),
+                Genotype.childGenotype(weaker, stronger, configuration.genotypeParams().minimumMutations(),
+                configuration.genotypeParams().maximumMutations()),
                 configuration.animalParams()
         );
 
