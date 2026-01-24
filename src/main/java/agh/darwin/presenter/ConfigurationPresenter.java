@@ -55,6 +55,66 @@ public class ConfigurationPresenter {
         double probabilityOfSmelling = Double.parseDouble(probabilityOfSmellingField.getText());
         int scentRadius = Integer.parseInt(scentRadiusField.getText());
 
+        if (width < 0 || height < 0 || width > 80 || height > 80) {
+            throw new IllegalArgumentException("Invalid Boundaries Parameters");
+        }
+
+        if (dayLength < 50 || dayLength > 3000) {
+            throw new IllegalArgumentException("Invalid Day Length");
+        }
+
+        if (startingPlants < 0 || startingPlants > height*width) {
+            throw new IllegalArgumentException("Invalid Starting Plants Number");
+        }
+
+        if (plantsPerDay < 0 || plantsPerDay > height*width) {
+            throw new IllegalArgumentException("Invalid Plants per Day Number");
+        }
+
+        if (plantEnergy < 0) {
+            throw new IllegalArgumentException("Invalid Plants Energy Value");
+        }
+
+        if (startingAnimals < 0 || startingAnimals > height*width) {
+            throw new IllegalArgumentException("Invalid Starting Animals Number");
+        }
+
+        if (startingEnergy < 0) {
+            throw new IllegalArgumentException("Invalid Starting Energy Value");
+        }
+
+        if (dailyEnergyConsumption < 0) {
+            throw new IllegalArgumentException("Invalid Daily Energy Consumption Value");
+        }
+
+        if (reproductionThreshold < 0) {
+            throw new IllegalArgumentException("Invalid Reproduction Threshold Value");
+        }
+
+        if (reproductionCost < 0) {
+            throw new IllegalArgumentException("Invalid Reproduction Cost Value");
+        }
+
+        if (genomeLength < 0) {
+            throw new IllegalArgumentException("Invalid Genome Length");
+        }
+
+        if (minimumMutations < 0 || maximumMutations > genomeLength) {
+            throw new IllegalArgumentException("Invalid Mutations Number");
+        }
+
+        if (scentDays < 0) {
+            throw new IllegalArgumentException("Invalid Scent Days Number");
+        }
+
+        if (probabilityOfSmelling < 0 || probabilityOfSmelling > 1) {
+            throw new IllegalArgumentException("Invalid Probability Of Smelling Number");
+        }
+
+        if (scentRadius < 0) {
+            throw new IllegalArgumentException("Invalid Scent Radius Number");
+        }
+
         Configuration configuration = new Configuration(
                 new Configuration.MapDimensions(width, height),
                 new Configuration.MapVariant(mapVariant),

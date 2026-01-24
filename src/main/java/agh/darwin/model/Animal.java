@@ -7,7 +7,7 @@ import agh.darwin.supplementary.Setting;
 import agh.darwin.supplementary.Vector2i;
 
 public class Animal implements MapEntity {
-    private OrdinalDirection orientation = OrdinalDirection.NORTH;
+    private OrdinalDirection orientation = OrdinalDirection.NORTH.getRandomDirection();
     private Vector2i position;
     private Energy energy;
     private final Genotype genotype;
