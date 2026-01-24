@@ -34,6 +34,11 @@
     </HBox>
 
     <HBox spacing="10" alignment="CENTER">
+        <Label text="Duration Of One Day:"/>
+        <TextField fx:id="durationOfOneDay" text="50"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
         <Label text="Starting Plants:"/>
         <TextField fx:id="startingPlantsField" text="50"/>
     </HBox>

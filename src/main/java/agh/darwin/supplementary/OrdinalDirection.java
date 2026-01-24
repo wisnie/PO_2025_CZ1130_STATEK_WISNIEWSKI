@@ -1,5 +1,7 @@
 package agh.darwin.supplementary;
 
+import java.util.Random;
+
 public enum OrdinalDirection {
     NORTH("północ", new Vector2i(0, 1)),
     NORTHEAST("północny wschód", new Vector2i(1, 1)),
@@ -14,6 +16,7 @@ public enum OrdinalDirection {
     private final Vector2i unitVector;
 
     private static final OrdinalDirection[] directions = values();
+    private static final Random random = new Random();
 
     OrdinalDirection(String displayText, Vector2i unitVector) {
         this.displayText = displayText;
@@ -34,6 +37,10 @@ public enum OrdinalDirection {
 
         return directions[(this.ordinal() + offset) % directions.length];
     };
+
+    public OrdinalDirection getRandomDirection() {
+        return directions[random.nextInt(directions.length)];
+    }
 
     public Vector2i toUnitVector() {
         return unitVector;

@@ -8,7 +8,8 @@ public record Configuration(
     PlantParameters plantParams,
     AnimalParameters animalParams,
     GenotypeParameters genotypeParams,
-    ScentParameters scentParams
+    ScentParameters scentParams,
+    DayLength dayLength
 ) {
     public record MapDimensions(int width, int height) {}
 
@@ -27,4 +28,6 @@ public record Configuration(
                                      int genomeLength) {}
 
     public record ScentParameters(int scentDays, double probabilityOfSmelling, int radius) {}
+
+    public record DayLength(int time) {}
 }

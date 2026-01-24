@@ -10,7 +10,7 @@ import java.util.*;
 
 public class Simulation implements AnimalEventListener, MapEventListener, Runnable {
     private final HashMap<Animal, AnimalStatistic> statistics = new HashMap<>();
-
+    private final int dayLength;
     private final GridMap simulationMap;
     private final Configuration configuration;
     private boolean paused = false;
@@ -19,6 +19,7 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
 
     public Simulation(Configuration configuration) {
         this.configuration = configuration;
+        this.dayLength = configuration.dayLength().time();
         this.simulationMap = switch (configuration.mapVariant().mapVariant()) {
             case "Scent Map" -> new ScentMap(configuration.mapDimensions().width(),
                     configuration.mapDimensions().height(), this::provideStatistics, configuration);
@@ -53,7 +54,7 @@ public class Simulation implements AnimalEventListener, MapEventListener, Runnab
 
             simulationDay++;
             try {
-                Thread.sleep(50);
+                Thread.sleep(dayLength);
             } catch (InterruptedException e) {
                 IO.println("Simulation thread interrupted");
             }
