@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<VBox alignment="CENTER" spacing="10" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="agh.darwin.presenter.ConfigurationPresenter"
+      style="-fx-padding: 20;">
+
+    <Label text="Configuration" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Width (0-80):"/>
+        <TextField fx:id="widthField" text="40"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Height (0-80):"/>
+        <TextField fx:id="heightField" text="40"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Map Variant:"/>
+        <ComboBox fx:id="mapVariantField" value="Basic Map">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Basic Map" />
+                    <String fx:value="Scent Map" />
+                </FXCollections>
+            </items>
+        </ComboBox>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Duration Of One Day (50ms-3000ms):"/>
+        <TextField fx:id="durationOfOneDay" text="50"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Starting Plants (0-Width*Heigth):"/>
+        <TextField fx:id="startingPlantsField" text="50"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Plants Per Day (0-Width*Heigth):"/>
+        <TextField fx:id="plantsPerDayField" text="15"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Plant Energy (>=0):"/>
+        <TextField fx:id="plantEnergyField" text="25"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Starting Animals (0-Width*Heigth):"/>
+        <TextField fx:id="startingAnimalsField" text="30"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Starting Energy (>=0):"/>
+        <TextField fx:id="startingEnergyField" text="60"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Daily Energy Consumption (>=0):"/>
+        <TextField fx:id="dailyEnergyConsumptionField" text="2"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Reproduction Threshold (>=0):"/>
+        <TextField fx:id="reproductionThresholdField" text="40"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Reproduction Cost (>=0):"/>
+        <TextField fx:id="reproductionCostField" text="20"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Minimum Mutations:"/>
+        <TextField fx:id="minimumMutationsField" text="0"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Maximum Mutations:"/>
+        <TextField fx:id="maximumMutationsField" text="5"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Genome Length (>=0):"/>
+        <TextField fx:id="genomeLengthField" text="8"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Scent Days (>=0):"/>
+        <TextField fx:id="scentDaysField" text="3"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Probability Of Smelling (0-1):"/>
+        <TextField fx:id="probabilityOfSmellingField" text="0.8"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Label text="Scent Radius (>=0):"/>
+        <TextField fx:id="scentRadiusField" text="5"/>
+    </HBox>
+
+    <Button text="Start Simulation" onAction="#onSimulationStartClicked"/>
+</VBox>

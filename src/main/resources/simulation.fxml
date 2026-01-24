@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="agh.darwin.presenter.SimulationPresenter"
+            minHeight="600.0" minWidth="800.0"
+            fx:id="viewRoot">
+
+    <center>
+        <GridPane fx:id="mapGrid" alignment="CENTER" gridLinesVisible="true"
+                  style="-fx-background-color: #eee;"/>
+    </center>
+
+    <right>
+        <VBox spacing="10" style="-fx-padding: 10; -fx-background-color: #ddd; -fx-min-width: 250;">
+            <Label text="Statistics" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+            <Label fx:id="statsLabel" text="Loading"/>
+
+            <Label text="Animal Tracking" style="-fx-font-weight: bold; -fx-font-size: 14px;"/>
+
+            <ComboBox fx:id="animalListField" promptText="Click on Map" maxWidth="Infinity"/>
+
+            <Label fx:id="animalStatsLabel" text="No animal choosen" wrapText="true"/>
+
+            <Button fx:id="pauseButton" text="Pause" onAction="#onPauseClicked" maxWidth="Infinity" />
+        </VBox>
+    </right>
+
+</BorderPane>
