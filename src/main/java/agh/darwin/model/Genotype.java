@@ -42,17 +42,18 @@ public final class Genotype implements Iterable<Integer> {
         }
 
         int mutationNumber = random.nextInt(minMutations, maxMutations+1);
-        List<Integer> list = new ArrayList<>();
+        // Using Fisher-Yates algorithm to generate specific number of indexes of genotype to mutate without repetition
+        List<Integer> indexes = new ArrayList<>();
         for (int j = 0; j < childGenes.size(); j++) {
-            list.add(j);
+            indexes.add(j);
         }
         for (int i = 0; i < mutationNumber; i++) {
             int ind = random.nextInt(i,childGenes.size());
-            int tmp = list.get(ind);
-            list.set(ind, list.get(i));
-            list.set(i, tmp);
+            int tmp = indexes.get(ind);
+            indexes.set(ind, indexes.get(i));
+            indexes.set(i, tmp);
         }
-        List<Integer> mutations = new ArrayList<>(list.subList(0, mutationNumber));
+        List<Integer> mutations = new ArrayList<>(indexes.subList(0, mutationNumber));
         for (int i = 0; i < mutationNumber; i++) {
             int mutationGeneIndex = mutations.get(i);
             int newGene = (childGenes.get(mutationGeneIndex) + random.nextInt(1,8)) % 8;

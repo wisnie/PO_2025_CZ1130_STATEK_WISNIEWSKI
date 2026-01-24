@@ -101,7 +101,7 @@ public class ConfigurationPresenter {
             throw new IllegalArgumentException("Invalid Genome Length");
         }
 
-        if (minimumMutations < 0 || maximumMutations > genomeLength) {
+        if (minimumMutations < 0 || maximumMutations > genomeLength || minimumMutations > maximumMutations) {
             throw new IllegalArgumentException("Invalid Mutations Number");
         }
 
