@@ -117,4 +117,31 @@ class SphereTopologyTest {
                 topology.moveForward(position, OrdinalDirection.NORTHWEST)
                         .direction());
     }
+
+    @Test
+    void handlesCorners() {
+        SphereTopology topology = new SphereTopology(BOUNDARY);
+        Vector2i position = new Vector2i(9, 9);
+
+        assertEquals(OrdinalDirection.SOUTH,
+                topology.moveForward(position, OrdinalDirection.NORTH)
+                        .direction());
+        assertEquals(new Vector2i(9, 9),
+                topology.moveForward(position, OrdinalDirection.NORTH)
+                        .position());
+
+        assertEquals(OrdinalDirection.EAST,
+                topology.moveForward(position, OrdinalDirection.EAST)
+                        .direction());
+        assertEquals(new Vector2i(0, 9),
+                topology.moveForward(position, OrdinalDirection.EAST)
+                        .position());
+
+        assertEquals(OrdinalDirection.SOUTHEAST,
+                topology.moveForward(position, OrdinalDirection.NORTHEAST)
+                        .direction());
+        assertEquals(new Vector2i(0, 9),
+                topology.moveForward(position, OrdinalDirection.NORTHEAST)
+                        .position());
+    }
 }

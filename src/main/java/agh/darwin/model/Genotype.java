@@ -24,11 +24,14 @@ public final class Genotype implements Iterable<Integer> {
         List<Integer> childGenes = new ArrayList<>();
         List<Integer> strongerGenes = stronger.getGenotype().genes;
         List<Integer> weakerGenes = weaker.getGenotype().genes;
+
         int strongerEnergy = stronger.getEnergy().amount();
         int weakerEnergy = weaker.getEnergy().amount();
         int genomeLength = strongerGenes.size();
+
         int genesFromStronger = (int) ((double) strongerEnergy / (weakerEnergy + strongerEnergy) * genomeLength);
         final Random random = new Random();
+
         boolean strongerLeftSide = random.nextBoolean();
         if (strongerLeftSide) {
             childGenes.addAll(strongerGenes.subList(0, genesFromStronger));
@@ -37,9 +40,11 @@ public final class Genotype implements Iterable<Integer> {
             childGenes.addAll(weakerGenes.subList(0, genomeLength - genesFromStronger));
             childGenes.addAll(strongerGenes.subList(genomeLength - genesFromStronger, genomeLength));
         }
+
         int mutationGeneIndex = random.nextInt(childGenes.size());
         int newGene = (childGenes.get(mutationGeneIndex) + random.nextInt(1,8)) % 8;
         childGenes.set(mutationGeneIndex, newGene);
+
         return new Genotype(childGenes);
 
     }
