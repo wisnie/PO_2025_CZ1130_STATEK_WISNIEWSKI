@@ -20,7 +20,7 @@ public final class Genotype implements Iterable<Integer> {
                 .toList());
     }
 
-    public static Genotype childGenotype(Animal weaker, Animal stronger) {
+    public static Genotype childGenotype(Animal weaker, Animal stronger, int minMutations, int maxMutations) {
         List<Integer> childGenes = new ArrayList<>();
         List<Integer> strongerGenes = stronger.getGenotype().genes;
         List<Integer> weakerGenes = weaker.getGenotype().genes;
@@ -41,9 +41,23 @@ public final class Genotype implements Iterable<Integer> {
             childGenes.addAll(strongerGenes.subList(genomeLength - genesFromStronger, genomeLength));
         }
 
-        int mutationGeneIndex = random.nextInt(childGenes.size());
-        int newGene = (childGenes.get(mutationGeneIndex) + random.nextInt(1,8)) % 8;
-        childGenes.set(mutationGeneIndex, newGene);
+        int mutationNumber = random.nextInt(minMutations, maxMutations+1);
+        List<Integer> list = new ArrayList<>();
+        for (int j = 0; j < childGenes.size(); j++) {
+            list.add(j);
+        }
+        for (int i = 0; i < mutationNumber; i++) {
+            int ind = random.nextInt(i,childGenes.size());
+            int tmp = list.get(ind);
+            list.set(ind, list.get(i));
+            list.set(i, tmp);
+        }
+        List<Integer> mutations = new ArrayList<>(list.subList(0, mutationNumber));
+        for (int i = 0; i < mutationNumber; i++) {
+            int mutationGeneIndex = mutations.get(i);
+            int newGene = (childGenes.get(mutationGeneIndex) + random.nextInt(1,8)) % 8;
+            childGenes.set(mutationGeneIndex, newGene);
+        }
 
         return new Genotype(childGenes);
 
