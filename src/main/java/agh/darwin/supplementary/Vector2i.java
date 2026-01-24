@@ -17,28 +17,28 @@ public record Vector2i(int x, int y) {
         return new Vector2i(x - other.x, y - other.y);
     }
 
-    public boolean precedes(Vector2i other) {
-        return precedesX(other) && precedesY(other);
+    public boolean weakPrecedes(Vector2i other) {
+        return x <= other.x && y <= other.y;
     }
 
     public boolean precedesX(Vector2i other) {
-        return  x <= other.x;
+        return  x < other.x;
     }
 
     public boolean precedesY(Vector2i other) {
-        return y <= other.y;
+        return y < other.y;
     }
 
-    public boolean follows(Vector2i other) {
-        return followsX(other) && followsY(other);
+    public boolean weakFollows(Vector2i other) {
+        return x >= other.x && y >= other.y;
     }
 
     public boolean followsX(Vector2i other) {
-        return x >= other.x;
+        return x > other.x;
     }
 
     public boolean followsY(Vector2i other) {
-        return y >= other.y;
+        return y > other.y;
     }
 
     public Vector2i upperRight(Vector2i other) {

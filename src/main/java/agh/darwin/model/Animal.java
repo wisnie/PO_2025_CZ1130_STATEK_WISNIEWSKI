@@ -7,10 +7,10 @@ import agh.darwin.supplementary.Setting;
 import agh.darwin.supplementary.Vector2i;
 
 public class Animal implements MapEntity {
+    private final Genotype genotype;
     private OrdinalDirection orientation = OrdinalDirection.NORTH;
     private Vector2i position;
     private Energy energy;
-    private final Genotype genotype;
 
     private final Configuration.AnimalParameters animalConf;
 
@@ -40,13 +40,13 @@ public class Animal implements MapEntity {
             case 5 -> Rotation.TWO_HUNDRED_TWENTY_FIVE;
             case 6 -> Rotation.TWO_HUNDRED_SEVENTY;
             case 7 -> Rotation.THREE_HUNDRED_FIFTEEN;
-            default -> throw new IllegalStateException("Unexpected value: " + genotype.activeGene());
+            default -> throw new IllegalStateException("Unexpected gene value: " + genotype.activeGene());
         };
         orientation = orientation.rotate(rotation);
 
-        Setting finalSetting = topology.moveForward(position, orientation);
-        position = finalSetting.position();
-        orientation = finalSetting.direction();
+        Setting setting = topology.moveForward(position, orientation);
+        position = setting.position();
+        orientation = setting.direction();
 
         genotype.nextGene();
     }
@@ -77,6 +77,6 @@ public class Animal implements MapEntity {
 
     @Override
     public String toString() {
-        return "Animal with " + energy.amount() + " energy";
+        return "Animal with " + energy.amount() + " energy.";
     }
 }
