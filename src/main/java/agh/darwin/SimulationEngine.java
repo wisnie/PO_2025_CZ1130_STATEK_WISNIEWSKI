@@ -27,4 +27,10 @@ public class SimulationEngine {
         }
     }
 
+    public void terminate() {
+        for (Simulation simulation : simulations) {
+            simulation.stop();
+        }
+        executor.shutdownNow();
+    }
 }
