@@ -46,12 +46,14 @@ public class ConfigurationPresenter {
         int startingAnimals = Integer.parseInt(startingAnimalsField.getText());
         int startingEnergy = Integer.parseInt(startingEnergyField.getText());
         int dailyEnergyConsumption = Integer.parseInt(dailyEnergyConsumptionField.getText());
+
         int reproductionThreshold = Integer.parseInt(reproductionThresholdField.getText());
         int reproductionCost = Integer.parseInt(reproductionCostField.getText());
         int minimumMutations = Integer.parseInt(minimumMutationsField.getText());
         int maximumMutations = Integer.parseInt(maximumMutationsField.getText());
         int genomeLength = Integer.parseInt(genomeLengthField.getText());
         int scentDays = Integer.parseInt(scentDaysField.getText());
+
         double probabilityOfSmelling = Double.parseDouble(probabilityOfSmellingField.getText());
         int scentRadius = Integer.parseInt(scentRadiusField.getText());
 

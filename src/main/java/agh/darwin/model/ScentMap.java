@@ -10,11 +10,24 @@ public class ScentMap extends BasicMap {
     private final HashMap<Vector2i, List<Scent>> scents = new HashMap<>();
     private final LinkedList<Scent> activeScents = new LinkedList<>();
 
-    private final SplittableRandom random = new SplittableRandom();;
+    private final SplittableRandom random = new SplittableRandom();
 
     public ScentMap(int width, int height, Function<Animal, AnimalAccessStatistics> accessStats, Configuration configuration) {
         super(width, height, accessStats, configuration);
     }
+
+    // Wybrano opcję, w której dostęp do pola, na którym jest zapach jest
+    // zawsze w O(1). Kosztem tego podejścia są dwa źródła prawdy o zapachach,
+    // natomiast wydaje się, że w praktyce powinno osiągać to lepsze wyniki,
+    // gdy jest zdecydowanie więcej zwierząt od zapachów.
+
+    // Przechowywanie referencji w promieniu R zajmuje O(R^2) i pozwala na sprawdzenie
+    // obecności zapachu w O(1), gdy zapach się wywietrza, zostaje usuwany od razu.
+    // Można do tego podejść także leniwie, więc usuwać zapach, gdy zwierze jest w zasięgu
+    // zapachu, który już jest nieaktywny, od razu go usuwamy. Jeszcze innym alternatywnym
+    // podejściem byłoby przechowywanie w jednym miejscu zapachów i sprawdzanie w każdej
+    // iteracji, czy zwierze jest w zasięgu, złożoności operacyjnej rzędu O(A * S), gdzie
+    // A - zwierzęta, S - zapachy.
 
     @Override
     public void simulateDayProgression() {
