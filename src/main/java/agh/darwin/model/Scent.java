@@ -15,8 +15,8 @@ public class Scent {
         return origin;
     }
 
-    public int getScentLongevity() {
-        return scentLongevityInDays;
+    public Integer getScentLongevity() {
+        return (Integer) scentLongevityInDays;
     }
 
     public void decreaseLongevity() {
